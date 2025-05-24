@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Activity, Calendar, MessageSquare, Video, FileText, CreditCard } from 'lucide-react';
 import { StatCard } from './StatCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +9,8 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 
 export const StudentDashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   const stats = [
     {
       title: 'Treinos Concluídos',
@@ -53,6 +56,31 @@ export const StudentDashboard: React.FC = () => {
     lastUpdate: '15/05/2024'
   };
 
+  // Handlers de navegação
+  const handleStartWorkout = () => {
+    navigate('/workout-plan');
+  };
+
+  const handleUpdateBiometry = () => {
+    navigate('/profile');
+  };
+
+  const handleViewAllVideos = () => {
+    navigate('/videos');
+  };
+
+  const handleManageSubscription = () => {
+    navigate('/subscription');
+  };
+
+  const handleViewAttendance = () => {
+    navigate('/attendance');
+  };
+
+  const handleViewMessages = () => {
+    navigate('/messages');
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -63,7 +91,14 @@ export const StudentDashboard: React.FC = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
+          <div key={index} onClick={() => {
+            if (stat.title === 'Treinos Concluídos') handleStartWorkout();
+            else if (stat.title === 'Próxima Aula') handleViewAttendance();
+            else if (stat.title === 'Mensagens') handleViewMessages();
+            else if (stat.title === 'Frequência Mensal') handleViewAttendance();
+          }} className="cursor-pointer">
+            <StatCard {...stat} />
+          </div>
         ))}
       </div>
 
@@ -101,7 +136,7 @@ export const StudentDashboard: React.FC = () => {
                 </Badge>
               </div>
             ))}
-            <Button className="w-full mt-4">
+            <Button className="w-full mt-4" onClick={handleStartWorkout}>
               <Activity className="h-4 w-4 mr-2" />
               Iniciar Treino
             </Button>
@@ -140,7 +175,7 @@ export const StudentDashboard: React.FC = () => {
                 <Progress value={85} className="h-2" />
               </div>
             </div>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleUpdateBiometry}>
               Atualizar Dados
             </Button>
           </CardContent>
@@ -165,7 +200,7 @@ export const StudentDashboard: React.FC = () => {
               { title: 'Yoga Matinal', duration: '20:45', level: 'Iniciante' },
               { title: 'Treino Funcional', duration: '25:15', level: 'Avançado' },
             ].map((video, index) => (
-              <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+              <div key={index} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer" onClick={handleViewAllVideos}>
                 <div>
                   <p className="font-medium text-gray-900">{video.title}</p>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -177,7 +212,7 @@ export const StudentDashboard: React.FC = () => {
                 <Video className="h-5 w-5 text-primary-600" />
               </div>
             ))}
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleViewAllVideos}>
               Ver Todos os Vídeos
             </Button>
           </CardContent>
@@ -211,7 +246,7 @@ export const StudentDashboard: React.FC = () => {
               </ul>
             </div>
             
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" onClick={handleManageSubscription}>
               Gerenciar Assinatura
             </Button>
           </CardContent>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Users, Calendar, MessageSquare, TrendingUp, Activity, Bell } from 'lucide-react';
 import { StatCard } from './StatCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 export const AdminDashboard: React.FC = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const stats = [
     {
@@ -53,50 +55,54 @@ export const AdminDashboard: React.FC = () => {
     { id: 4, name: 'Crossfit', time: '18:00', students: 10, capacity: 12 },
   ];
 
-  // Handlers para os botões
+  // Handlers navegação para páginas
   const handleViewAllActivities = () => {
-    toast({
-      title: "Atividades",
-      description: "Redirecionando para página de atividades completa...",
-    });
-    console.log('Navegando para página de atividades');
-    // Aqui seria implementada a navegação para a página de atividades
+    navigate('/activities');
   };
 
   const handleManageCalendar = () => {
-    toast({
-      title: "Calendário",
-      description: "Abrindo gerenciador de calendário...",
-    });
-    console.log('Abrindo gerenciador de calendário');
-    // Aqui seria implementada a navegação para o calendário
+    navigate('/calendar');
   };
 
+  const handleViewAllStudents = () => {
+    navigate('/students');
+  };
+
+  const handleManagePayments = () => {
+    navigate('/payments');
+  };
+
+  const handleManageBiometry = () => {
+    navigate('/biometry');
+  };
+
+  const handleViewGoals = () => {
+    navigate('/goals');
+  };
+
+  // Handlers para alertas específicos
   const handleVerifyPayments = () => {
+    navigate('/payments');
     toast({
-      title: "Pagamentos Pendentes",
-      description: "Verificando 5 pagamentos em atraso...",
+      title: "Pagamentos",
+      description: "Redirecionando para página de pagamentos...",
     });
-    console.log('Verificando pagamentos pendentes');
-    // Aqui seria implementada a lógica de verificação de pagamentos
   };
 
   const handleNotifyBioimpedance = () => {
+    navigate('/biometry');
     toast({
-      title: "Notificações Enviadas",
-      description: "12 alunos foram notificados para atualizar bioimpedância",
+      title: "Bioimpedância",
+      description: "Redirecionando para controle de bioimpedância...",
     });
-    console.log('Enviando notificações de bioimpedância');
-    // Aqui seria implementada a lógica de envio de notificações
   };
 
   const handleViewMonthlyGoals = () => {
+    navigate('/goals');
     toast({
-      title: "Meta Mensal",
-      description: "Exibindo detalhes da meta mensal...",
+      title: "Metas",
+      description: "Redirecionando para página de metas...",
     });
-    console.log('Visualizando detalhes da meta mensal');
-    // Aqui seria implementada a navegação para detalhes da meta
   };
 
   return (
@@ -109,7 +115,13 @@ export const AdminDashboard: React.FC = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
+          <div key={index} onClick={() => {
+            if (stat.title === 'Total de Alunos') handleViewAllStudents();
+            else if (stat.title === 'Aulas Hoje') handleManageCalendar();
+            else if (stat.title === 'Receita Mensal') handleManagePayments();
+          }} className="cursor-pointer">
+            <StatCard {...stat} />
+          </div>
         ))}
       </div>
 
