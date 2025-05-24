@@ -1,14 +1,26 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
+import { StudentDashboard } from '@/components/Dashboard/StudentDashboard';
 
 const Index = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
-  );
+  const { user } = useAuth();
+
+  const renderDashboard = () => {
+    switch (user?.role) {
+      case 'admin':
+        return <AdminDashboard />;
+      case 'professor':
+        return <AdminDashboard />; // Por enquanto usa o mesmo dashboard do admin
+      case 'aluno':
+        return <StudentDashboard />;
+      default:
+        return <div>Role não reconhecida</div>;
+    }
+  };
+
+  return renderDashboard();
 };
 
 export default Index;
