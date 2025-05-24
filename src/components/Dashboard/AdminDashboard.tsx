@@ -5,8 +5,11 @@ import { StatCard } from './StatCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 export const AdminDashboard: React.FC = () => {
+  const { toast } = useToast();
+
   const stats = [
     {
       title: 'Total de Alunos',
@@ -50,6 +53,52 @@ export const AdminDashboard: React.FC = () => {
     { id: 4, name: 'Crossfit', time: '18:00', students: 10, capacity: 12 },
   ];
 
+  // Handlers para os botões
+  const handleViewAllActivities = () => {
+    toast({
+      title: "Atividades",
+      description: "Redirecionando para página de atividades completa...",
+    });
+    console.log('Navegando para página de atividades');
+    // Aqui seria implementada a navegação para a página de atividades
+  };
+
+  const handleManageCalendar = () => {
+    toast({
+      title: "Calendário",
+      description: "Abrindo gerenciador de calendário...",
+    });
+    console.log('Abrindo gerenciador de calendário');
+    // Aqui seria implementada a navegação para o calendário
+  };
+
+  const handleVerifyPayments = () => {
+    toast({
+      title: "Pagamentos Pendentes",
+      description: "Verificando 5 pagamentos em atraso...",
+    });
+    console.log('Verificando pagamentos pendentes');
+    // Aqui seria implementada a lógica de verificação de pagamentos
+  };
+
+  const handleNotifyBioimpedance = () => {
+    toast({
+      title: "Notificações Enviadas",
+      description: "12 alunos foram notificados para atualizar bioimpedância",
+    });
+    console.log('Enviando notificações de bioimpedância');
+    // Aqui seria implementada a lógica de envio de notificações
+  };
+
+  const handleViewMonthlyGoals = () => {
+    toast({
+      title: "Meta Mensal",
+      description: "Exibindo detalhes da meta mensal...",
+    });
+    console.log('Visualizando detalhes da meta mensal');
+    // Aqui seria implementada a navegação para detalhes da meta
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -87,7 +136,7 @@ export const AdminDashboard: React.FC = () => {
                 <span className="text-xs text-gray-500">{activity.time}</span>
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
+            <Button variant="outline" className="w-full mt-4" onClick={handleViewAllActivities}>
               Ver todas as atividades
             </Button>
           </CardContent>
@@ -119,7 +168,7 @@ export const AdminDashboard: React.FC = () => {
                 </div>
               </div>
             ))}
-            <Button variant="outline" className="w-full mt-4">
+            <Button variant="outline" className="w-full mt-4" onClick={handleManageCalendar}>
               <Calendar className="h-4 w-4 mr-2" />
               Gerenciar Calendário
             </Button>
@@ -140,21 +189,21 @@ export const AdminDashboard: React.FC = () => {
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
               <h4 className="font-medium text-yellow-800">Pagamentos Pendentes</h4>
               <p className="text-sm text-yellow-700 mt-1">5 alunos com mensalidades em atraso</p>
-              <Button size="sm" variant="outline" className="mt-2">
+              <Button size="sm" variant="outline" className="mt-2" onClick={handleVerifyPayments}>
                 Verificar
               </Button>
             </div>
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <h4 className="font-medium text-blue-800">Bioimpedâncias</h4>
               <p className="text-sm text-blue-700 mt-1">12 alunos precisam atualizar dados</p>
-              <Button size="sm" variant="outline" className="mt-2">
+              <Button size="sm" variant="outline" className="mt-2" onClick={handleNotifyBioimpedance}>
                 Notificar
               </Button>
             </div>
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
               <h4 className="font-medium text-green-800">Meta Mensal</h4>
               <p className="text-sm text-green-700 mt-1">85% da meta de novos alunos atingida</p>
-              <Button size="sm" variant="outline" className="mt-2">
+              <Button size="sm" variant="outline" className="mt-2" onClick={handleViewMonthlyGoals}>
                 Detalhes
               </Button>
             </div>
