@@ -3,6 +3,7 @@ import React from 'react';
 import { Bell, Search, User, LogOut, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,17 +42,9 @@ export const Header: React.FC = () => {
   return (
     <header className="h-16 border-b border-gray-200 bg-white px-6 flex items-center justify-between sticky top-0 z-50">
       <div className="flex items-center gap-4 flex-1">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500 to-primary-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">F</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">FitApp</h1>
-            <p className="text-xs text-gray-500">Assessoria Esportiva</p>
-          </div>
-        </div>
+        <SidebarTrigger />
         
-        <div className="relative max-w-md ml-8">
+        <div className="relative max-w-md ml-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             placeholder="Pesquisar..."
