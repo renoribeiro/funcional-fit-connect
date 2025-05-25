@@ -9,15 +9,22 @@ import { LoginForm } from "@/components/Auth/LoginForm";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import NotFound from "./pages/NotFound";
 
+console.log('App.tsx: Inicializando componentes...');
+
 const queryClient = new QueryClient();
+console.log('App.tsx: QueryClient criado:', queryClient);
 
 const AppContent = () => {
+  console.log('AppContent: Renderizando...');
   const { isAuthenticated } = useAuth();
+  console.log('AppContent: isAuthenticated =', isAuthenticated);
 
   if (!isAuthenticated) {
+    console.log('AppContent: Usuário não autenticado, mostrando LoginForm');
     return <LoginForm />;
   }
 
+  console.log('AppContent: Usuário autenticado, mostrando MainLayout');
   return (
     <BrowserRouter>
       <Routes>
@@ -28,16 +35,22 @@ const AppContent = () => {
   );
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  console.log('App: Renderizando componente principal...');
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
+console.log('App.tsx: Componente App definido');
 
 export default App;

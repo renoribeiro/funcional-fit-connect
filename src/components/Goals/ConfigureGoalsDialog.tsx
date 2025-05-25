@@ -96,8 +96,11 @@ export const ConfigureGoalsDialog: React.FC<ConfigureGoalsDialogProps> = ({
   const onSubmit = (data: GoalForm) => {
     const periodText = data.period === 'weekly' ? 'Semanal' : 'Janeiro 2024';
     
+    // Corrigindo o tipo - garantindo que todos os campos obrigatórios estão presentes
     onSave({
-      ...data,
+      name: data.name,
+      target: data.target,
+      type: data.type,
       period: periodText,
     });
     onOpenChange(false);
