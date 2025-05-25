@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   Users, Calendar, MessageSquare, TrendingUp, Activity, CreditCard,
   BarChart3, Target, Dumbbell, Clock, Video, MessageCircle,
-  Send, User, Clipboard, Home
+  Send, User, Clipboard, Home, Settings
 } from 'lucide-react';
 import {
   Sidebar,
@@ -32,6 +32,7 @@ export const AppSidebar: React.FC = () => {
     { title: 'Atividades', url: '/activities', icon: Activity },
     { title: 'Bioimpedância', url: '/biometry', icon: BarChart3 },
     { title: 'Metas', url: '/goals', icon: Target },
+    ...(user?.role === 'admin' ? [{ title: 'Configurações', url: '/settings', icon: Settings }] : []),
   ];
 
   const studentMenuItems = [

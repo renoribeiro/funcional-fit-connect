@@ -6,17 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { EditStudentDialog } from '@/components/Students/EditStudentDialog';
+import { ViewStudentDialog } from '@/components/Students/ViewStudentDialog';
+
+interface Student {
+  id: number;
+  name: string;
+  email: string;
+  plan: string;
+  status: string;
+  lastWorkout: string;
+}
 
 export const StudentsPage: React.FC = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
-
-  const students = [
+  const [editStudentOpen, setEditStudentOpen] = useState(false);
+  const [viewStudentOpen, setViewStudentOpen] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [students, setStudents] = useState<Student[]>([
     { id: 1, name: 'Maria Santos', email: 'maria@email.com', plan: 'Premium', status: 'Ativo', lastWorkout: '2024-01-22' },
     { id: 2, name: 'João Silva', email: 'joao@email.com', plan: 'Básico', status: 'Ativo', lastWorkout: '2024-01-21' },
     { id: 3, name: 'Ana Costa', email: 'ana@email.com', plan: 'Premium', status: 'Pendente', lastWorkout: '2024-01-20' },
     { id: 4, name: 'Carlos Oliveira', email: 'carlos@email.com', plan: 'Intermediário', status: 'Ativo', lastWorkout: '2024-01-19' },
-  ];
+  ]);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -30,24 +43,27 @@ export const StudentsPage: React.FC = () => {
     });
   };
 
-  const handleViewStudent = (studentId: number) => {
-    toast({
-      title: "Visualizar Aluno",
-      description: `Abrindo perfil do aluno ID: ${studentId}`,
-    });
+  const handleViewStudent = (student: Student) => {
+    setSelectedStudent(student);
+    setViewStudentOpen(true);
   };
 
-  const handleEditStudent = (studentId: number) => {
-    toast({
-      title: "Editar Aluno", 
-      description: `Editando aluno ID: ${studentId}`,
-    });
+  const handleEditStudent = (student: Student) => {
+    setSelectedStudent(student);
+    setEditStudentOpen(true);
+  };
+
+  const handleSaveStudent = (updatedStudent: Student) => {
+    setStudents(prev => prev.map(student => 
+      student.id === updatedStudent.id ? updatedStudent : student
+    ));
   };
 
   const handleDeleteStudent = (studentId: number) => {
+    setStudents(prev => prev.filter(student => student.id !== studentId));
     toast({
-      title: "Excluir Aluno",
-      description: `Aluno ID: ${studentId} removido`,
+      title: "Aluno Excluído",
+      description: `Aluno removido com sucesso`,
       variant: "destructive",
     });
   };
@@ -101,10 +117,10 @@ export const StudentsPage: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleViewStudent(student.id)}>
+                  <Button variant="outline" size="sm" onClick={() => handleViewStudent(student)}>
                     <Eye className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleEditStudent(student.id)}>
+                  <Button variant="outline" size="sm" onClick={() => handleEditStudent(student)}>
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button variant="outline" size="sm" onClick={() => handleDeleteStudent(student.id)}>
@@ -116,6 +132,19 @@ export const StudentsPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <EditStudentDialog
+        open={editStudentOpen}
+        onOpenChange={setEditStudentOpen}
+        student={selectedStudent}
+        onSave={handleSaveStudent}
+      />
+
+      <ViewStudentDialog
+        open={viewStudentOpen}
+        onOpenChange={setViewStudentOpen}
+        student={selectedStudent}
+      />
     </div>
   );
 };

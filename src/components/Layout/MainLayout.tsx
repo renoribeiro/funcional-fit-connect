@@ -15,6 +15,7 @@ import { CalendarPage } from '@/pages/admin/CalendarPage';
 import { ActivitiesPage } from '@/pages/admin/ActivitiesPage';
 import { BiometryPage } from '@/pages/admin/BiometryPage';
 import { GoalsPage } from '@/pages/admin/GoalsPage';
+import { SettingsPage } from '@/pages/admin/SettingsPage';
 
 // Páginas Aluno
 import { WorkoutPlanPage } from '@/pages/student/WorkoutPlanPage';
@@ -50,6 +51,7 @@ export const MainLayout: React.FC = () => {
         <Route path="/activities" element={<ActivitiesPage />} />
         <Route path="/biometry" element={<BiometryPage />} />
         <Route path="/goals" element={<GoalsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </>
     );
 
