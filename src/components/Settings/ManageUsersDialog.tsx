@@ -5,8 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Search, Edit, Trash2, UserPlus } from 'lucide-react';
+import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { CreateUserDialog } from './CreateUserDialog';
+import { EditUserDialog } from './EditUserDialog';
+import { DeleteUserDialog } from './DeleteUserDialog';
 import { useToast } from '@/hooks/use-toast';
 
 interface ManageUsersDialogProps {
@@ -30,14 +32,17 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [createUserOpen, setCreateUserOpen] = useState(false);
+  const [editUserOpen, setEditUserOpen] = useState(false);
+  const [deleteUserOpen, setDeleteUserOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
-  const users: User[] = [
+  const [users, setUsers] = useState<User[]>([
     { id: 1, name: 'Administrador', email: 'admin@fitapp.com', role: 'admin', status: 'Ativo', createdAt: '2024-01-01' },
     { id: 2, name: 'Carlos Silva', email: 'professor@fitapp.com', role: 'professor', status: 'Ativo', createdAt: '2024-01-02' },
     { id: 3, name: 'Maria Santos', email: 'aluno@fitapp.com', role: 'aluno', status: 'Ativo', createdAt: '2024-01-03' },
     { id: 4, name: 'João Silva', email: 'joao@email.com', role: 'aluno', status: 'Ativo', createdAt: '2024-01-10' },
     { id: 5, name: 'Ana Costa', email: 'ana@email.com', role: 'aluno', status: 'Inativo', createdAt: '2024-01-15' },
-  ];
+  ]);
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -46,23 +51,47 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
   );
 
   const handleCreateUser = (userData: any) => {
+    const newUser: User = {
+      id: users.length + 1,
+      ...userData,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    setUsers([...users, newUser]);
     toast({
       title: "Usuário criado",
       description: `Usuário ${userData.name} foi criado com sucesso.`,
     });
   };
 
-  const handleEditUser = (userId: number) => {
-    toast({
-      title: "Editar Usuário",
-      description: `Editando usuário ID: ${userId}`,
-    });
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setEditUserOpen(true);
   };
 
-  const handleDeleteUser = (userId: number) => {
+  const handleSaveUser = (updatedUser: User) => {
+    setUsers(prev => prev.map(user => 
+      user.id === updatedUser.id ? updatedUser : user
+    ));
+  };
+
+  const handleDeleteUser = (user: User) => {
+    if (user.role === 'admin') {
+      toast({
+        title: "Erro",
+        description: "Não é possível excluir o usuário administrador.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setSelectedUser(user);
+    setDeleteUserOpen(true);
+  };
+
+  const confirmDeleteUser = (userId: number) => {
+    setUsers(prev => prev.filter(user => user.id !== userId));
     toast({
       title: "Usuário excluído",
-      description: `Usuário ID: ${userId} foi removido do sistema.`,
+      description: "Usuário foi removido do sistema com sucesso.",
       variant: "destructive",
     });
   };
@@ -88,7 +117,7 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[800px] max-h-[80vh]">
+        <DialogContent className="sm:max-w-[900px] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Gerenciar Usuários</DialogTitle>
             <DialogDescription>
@@ -146,15 +175,16 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleEditUser(user.id)}
+                            onClick={() => handleEditUser(user)}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDeleteUser(user.id)}
+                            onClick={() => handleDeleteUser(user)}
                             disabled={user.role === 'admin'}
+                            className={user.role === 'admin' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-50'}
                           >
                             <Trash2 className="h-4 w-4 text-red-600" />
                           </Button>
@@ -166,8 +196,22 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
               </Table>
             </div>
 
-            <div className="text-sm text-gray-600">
-              Mostrando {filteredUsers.length} de {users.length} usuários
+            <div className="text-sm text-gray-600 flex justify-between items-center">
+              <span>Mostrando {filteredUsers.length} de {users.length} usuários</span>
+              <div className="flex gap-4 text-xs">
+                <span className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-red-500 rounded"></div>
+                  Administradores: {users.filter(u => u.role === 'admin').length}
+                </span>
+                <span className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded"></div>
+                  Professores: {users.filter(u => u.role === 'professor').length}
+                </span>
+                <span className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-gray-500 rounded"></div>
+                  Alunos: {users.filter(u => u.role === 'aluno').length}
+                </span>
+              </div>
             </div>
           </div>
         </DialogContent>
@@ -177,6 +221,20 @@ export const ManageUsersDialog: React.FC<ManageUsersDialogProps> = ({
         open={createUserOpen}
         onOpenChange={setCreateUserOpen}
         onSave={handleCreateUser}
+      />
+
+      <EditUserDialog
+        open={editUserOpen}
+        onOpenChange={setEditUserOpen}
+        user={selectedUser}
+        onSave={handleSaveUser}
+      />
+
+      <DeleteUserDialog
+        open={deleteUserOpen}
+        onOpenChange={setDeleteUserOpen}
+        user={selectedUser}
+        onConfirm={confirmDeleteUser}
       />
     </>
   );
