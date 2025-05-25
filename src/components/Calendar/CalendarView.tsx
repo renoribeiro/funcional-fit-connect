@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, MapPin } from 'lucide-react';
+import { Clock, Users, MapPin, CalendarDays } from 'lucide-react';
 import {
   HoverCard,
   HoverCardContent,
@@ -51,6 +51,15 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return classes.filter(
       (cls) => cls.date.toDateString() === date.toDateString()
     );
+  };
+
+  // Função para obter os próximos 5 eventos
+  const getUpcomingEvents = () => {
+    const now = new Date();
+    return classes
+      .filter(cls => cls.date >= now)
+      .sort((a, b) => a.date.getTime() - b.date.getTime())
+      .slice(0, 5);
   };
 
   // Custom day content para mostrar indicadores de aulas com hover
@@ -110,75 +119,138 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Calendário de Aulas</CardTitle>
-        <CardDescription>
-          Passe o mouse sobre as datas com aulas para ver um resumo. Clique na data para ver detalhes completos.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Calendário do mês atual */}
-          <div>
-            <h3 className="font-semibold mb-3 text-center">
-              {currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-            </h3>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={onDateSelect}
-              month={currentMonth}
-              onMonthChange={setCurrentMonth}
-              className="rounded-md border"
-              modifiers={{
-                hasClasses: (date) => hasClasses(date),
-              }}
-              modifiersStyles={{
-                hasClasses: {
-                  fontWeight: 'bold',
-                  color: 'var(--primary)',
-                },
-              }}
-              components={{
-                Day: ({ date }) => renderDay(date),
-              }}
-            />
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Calendário de Aulas</CardTitle>
+          <CardDescription>
+            Passe o mouse sobre as datas com aulas para ver um resumo. Clique na data para ver detalhes completos.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {/* Calendários lado a lado em uma única linha */}
+          <div className="grid grid-cols-2 gap-6">
+            {/* Calendário do mês atual */}
+            <div>
+              <h3 className="font-semibold mb-3 text-center">
+                {currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+              </h3>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={onDateSelect}
+                month={currentMonth}
+                onMonthChange={setCurrentMonth}
+                className="rounded-md border w-full"
+                modifiers={{
+                  hasClasses: (date) => hasClasses(date),
+                }}
+                modifiersStyles={{
+                  hasClasses: {
+                    fontWeight: 'bold',
+                    color: 'var(--primary)',
+                  },
+                }}
+                components={{
+                  Day: ({ date }) => renderDay(date),
+                }}
+              />
+            </div>
+            
+            {/* Calendário do próximo mês */}
+            <div>
+              <h3 className="font-semibold mb-3 text-center">
+                {nextMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+              </h3>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={onDateSelect}
+                month={nextMonth}
+                onMonthChange={(newMonth) => setCurrentMonth(new Date(newMonth.getFullYear(), newMonth.getMonth() - 1, 1))}
+                className="rounded-md border w-full"
+                modifiers={{
+                  hasClasses: (date) => hasClasses(date),
+                }}
+                modifiersStyles={{
+                  hasClasses: {
+                    fontWeight: 'bold',
+                    color: 'var(--primary)',
+                  },
+                }}
+                components={{
+                  Day: ({ date }) => renderDay(date),
+                }}
+              />
+            </div>
           </div>
-          
-          {/* Calendário do próximo mês */}
-          <div>
-            <h3 className="font-semibold mb-3 text-center">
-              {nextMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
-            </h3>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={onDateSelect}
-              month={nextMonth}
-              onMonthChange={(newMonth) => setCurrentMonth(new Date(newMonth.getFullYear(), newMonth.getMonth() - 1, 1))}
-              className="rounded-md border"
-              modifiers={{
-                hasClasses: (date) => hasClasses(date),
-              }}
-              modifiersStyles={{
-                hasClasses: {
-                  fontWeight: 'bold',
-                  color: 'var(--primary)',
-                },
-              }}
-              components={{
-                Day: ({ date }) => renderDay(date),
-              }}
-            />
-          </div>
-        </div>
-        
-        {selectedDate && (
-          <div className="mt-6">
-            <h4 className="font-semibold mb-3 text-lg">
+        </CardContent>
+      </Card>
+
+      {/* Próximos 5 eventos */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5" />
+            Próximos Eventos
+          </CardTitle>
+          <CardDescription>
+            Os cinco próximos eventos agendados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {getUpcomingEvents().length > 0 ? (
+            <div className="space-y-3">
+              {getUpcomingEvents().map((cls) => (
+                <div key={cls.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <h4 className="font-medium">{cls.name}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Prof: {cls.instructor}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <CalendarDays className="h-4 w-4" />
+                      <span>{cls.date.toLocaleDateString('pt-BR')}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-4 w-4" />
+                      <span>{cls.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-4 w-4" />
+                      <span>{cls.location}</span>
+                    </div>
+                    <Badge variant={cls.students >= cls.capacity ? 'destructive' : 'secondary'}>
+                      {cls.students}/{cls.capacity}
+                    </Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 bg-gray-50 rounded-lg">
+              <CalendarDays className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-muted-foreground">Nenhum evento agendado nos próximos dias.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Detalhes da data selecionada */}
+      {selectedDate && (
+        <Card>
+          <CardHeader>
+            <CardTitle>
               Aulas do dia {selectedDate.toLocaleDateString('pt-BR')}
-            </h4>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
             {getClassesForDate(selectedDate).length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {getClassesForDate(selectedDate).map((cls) => (
@@ -216,9 +288,9 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <p className="text-muted-foreground">Nenhuma aula agendada para esta data.</p>
               </div>
             )}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 };
