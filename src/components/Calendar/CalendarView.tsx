@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, MapPin, CalendarDays } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, Users, MapPin, CalendarDays, Edit } from 'lucide-react';
 import {
   HoverCard,
   HoverCardContent,
@@ -26,12 +27,14 @@ interface CalendarViewProps {
   classes: Class[];
   onDateSelect: (date: Date | undefined) => void;
   selectedDate: Date | undefined;
+  onEditClass?: (classData: Class) => void;
 }
 
 export const CalendarView: React.FC<CalendarViewProps> = ({
   classes,
   onDateSelect,
   selectedDate,
+  onEditClass,
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   
@@ -141,7 +144,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 onSelect={onDateSelect}
                 month={currentMonth}
                 onMonthChange={setCurrentMonth}
-                className="rounded-md border w-full"
+                className="rounded-md border w-full [&_.rdp-nav_button:first-child]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
                 }}
@@ -168,7 +171,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 onSelect={onDateSelect}
                 month={nextMonth}
                 onMonthChange={(newMonth) => setCurrentMonth(new Date(newMonth.getFullYear(), newMonth.getMonth() - 1, 1))}
-                className="rounded-md border w-full"
+                className="rounded-md border w-full [&_.rdp-nav_button:first-child]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
                 }}
@@ -229,6 +232,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     <Badge variant={cls.students >= cls.capacity ? 'destructive' : 'secondary'}>
                       {cls.students}/{cls.capacity}
                     </Badge>
+                    {onEditClass && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEditClass(cls)}
+                        className="ml-2"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               ))}

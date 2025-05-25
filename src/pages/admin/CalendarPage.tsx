@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar, Plus, Clock, Users, MapPin, Settings } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -198,6 +197,7 @@ export const CalendarPage: React.FC = () => {
         classes={classes}
         onDateSelect={setSelectedDate}
         selectedDate={selectedDate}
+        onEditClass={handleEditClass}
       />
 
       {selectedDate && (
