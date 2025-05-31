@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Users, Search, Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,15 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { EditStudentDialog } from '@/components/Students/EditStudentDialog';
 import { ViewStudentDialog } from '@/components/Students/ViewStudentDialog';
-
-interface Student {
-  id: number;
-  name: string;
-  email: string;
-  plan: string;
-  status: string;
-  lastWorkout: string;
-}
+import { Student } from '@/types/student';
+import { usePaymentReminders } from '@/hooks/use-payment-reminders';
 
 export const StudentsPage: React.FC = () => {
   const { toast } = useToast();
@@ -25,11 +17,53 @@ export const StudentsPage: React.FC = () => {
   const [viewStudentOpen, setViewStudentOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [students, setStudents] = useState<Student[]>([
-    { id: 1, name: 'Maria Santos', email: 'maria@email.com', plan: 'Premium', status: 'Ativo', lastWorkout: '2024-01-22' },
-    { id: 2, name: 'João Silva', email: 'joao@email.com', plan: 'Básico', status: 'Ativo', lastWorkout: '2024-01-21' },
-    { id: 3, name: 'Ana Costa', email: 'ana@email.com', plan: 'Premium', status: 'Pendente', lastWorkout: '2024-01-20' },
-    { id: 4, name: 'Carlos Oliveira', email: 'carlos@email.com', plan: 'Intermediário', status: 'Ativo', lastWorkout: '2024-01-19' },
+    { 
+      id: 1, 
+      name: 'Maria Santos', 
+      email: 'maria@email.com', 
+      phone: '(11) 99999-1111',
+      plan: 'Premium', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-22',
+      paymentMethod: 'Site',
+      dueDate: '2024-02-15'
+    },
+    { 
+      id: 2, 
+      name: 'João Silva', 
+      email: 'joao@email.com', 
+      phone: '(11) 99999-2222',
+      plan: 'Básico', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-21',
+      paymentMethod: 'App'
+    },
+    { 
+      id: 3, 
+      name: 'Ana Costa', 
+      email: 'ana@email.com', 
+      phone: '(11) 99999-3333',
+      plan: 'Premium', 
+      status: 'Pendente', 
+      lastWorkout: '2024-01-20',
+      paymentMethod: 'Direto',
+      dueDate: '2024-02-10'
+    },
+    { 
+      id: 4, 
+      name: 'Carlos Oliveira', 
+      email: 'carlos@email.com', 
+      phone: '(11) 99999-4444',
+      plan: 'Intermediário', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-19',
+      paymentMethod: 'Site',
+      dueDate: '2024-02-20'
+    },
   ]);
+
+  // Integrar hook de lembretes de pagamento
+  usePaymentReminders(students);
 
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,11 +142,16 @@ export const StudentsPage: React.FC = () => {
                 <div className="flex-1">
                   <h3 className="font-medium text-gray-900">{student.name}</h3>
                   <p className="text-sm text-gray-600">{student.email}</p>
+                  <p className="text-sm text-gray-600">{student.phone}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant={student.status === 'Ativo' ? 'default' : 'secondary'}>
                       {student.status}
                     </Badge>
                     <span className="text-xs text-gray-500">Plano: {student.plan}</span>
+                    <span className="text-xs text-gray-500">Pagamento: {student.paymentMethod}</span>
+                    {student.dueDate && (
+                      <span className="text-xs text-gray-500">Vence: {student.dueDate}</span>
+                    )}
                     <span className="text-xs text-gray-500">Último treino: {student.lastWorkout}</span>
                   </div>
                 </div>

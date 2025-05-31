@@ -4,12 +4,13 @@ import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, Users, MapPin, CalendarDays, Edit } from 'lucide-react';
+import { Clock, Users, MapPin, CalendarDays, Edit, ChevronLeft, ChevronRight } from 'lucide-react';
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card';
+import { DayEventsDialog } from './DayEventsDialog';
 
 interface Class {
   id: number;
@@ -37,9 +38,22 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   onEditClass,
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [dayEventsOpen, setDayEventsOpen] = useState(false);
+  const [selectedDayForModal, setSelectedDayForModal] = useState<Date | null>(null);
   
   // Calcular o próximo mês
   const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+
+  // Função para navegar meses
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    const newMonth = new Date(currentMonth);
+    if (direction === 'prev') {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
+    }
+    setCurrentMonth(newMonth);
+  };
 
   // Função para verificar se uma data tem aulas
   const hasClasses = (date: Date) => {
@@ -54,6 +68,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     return classes.filter(
       (cls) => cls.date.toDateString() === date.toDateString()
     );
+  };
+
+  // Função para lidar com clique no dia
+  const handleDayClick = (date: Date) => {
+    setSelectedDayForModal(date);
+    setDayEventsOpen(true);
+    onDateSelect(date);
   };
 
   // Função para obter os próximos 5 eventos
@@ -73,7 +94,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       return (
         <button
           className="h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md"
-          onClick={() => onDateSelect(day)}
+          onClick={() => handleDayClick(day)}
         >
           {day.getDate()}
         </button>
@@ -85,7 +106,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <HoverCardTrigger asChild>
           <button
             className="relative h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md flex items-center justify-center"
-            onClick={() => onDateSelect(day)}
+            onClick={() => handleDayClick(day)}
           >
             <span>{day.getDate()}</span>
             <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></div>
@@ -131,6 +152,29 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Controles de navegação centralizados */}
+          <div className="flex justify-center items-center mb-6">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateMonth('prev')}
+              className="mr-4"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <span className="text-lg font-semibold mx-4">
+              {currentMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })} - {nextMonth.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateMonth('next')}
+              className="ml-4"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+
           {/* Calendários lado a lado em uma única linha */}
           <div className="grid grid-cols-2 gap-6">
             {/* Calendário do mês atual */}
@@ -144,7 +188,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 onSelect={onDateSelect}
                 month={currentMonth}
                 onMonthChange={setCurrentMonth}
-                className="rounded-md border w-full [&_.rdp-nav_button:first-child]:hidden"
+                className="rounded-md border w-full [&_.rdp-nav]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
                 }}
@@ -170,8 +214,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 selected={selectedDate}
                 onSelect={onDateSelect}
                 month={nextMonth}
-                onMonthChange={(newMonth) => setCurrentMonth(new Date(newMonth.getFullYear(), newMonth.getMonth() - 1, 1))}
-                className="rounded-md border w-full [&_.rdp-nav_button:first-child]:hidden"
+                className="rounded-md border w-full [&_.rdp-nav]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
                 }}
@@ -255,55 +298,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </CardContent>
       </Card>
 
-      {/* Detalhes da data selecionada */}
-      {selectedDate && (
-        <Card>
-          <CardHeader>
-            <CardTitle>
-              Aulas do dia {selectedDate.toLocaleDateString('pt-BR')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {getClassesForDate(selectedDate).length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {getClassesForDate(selectedDate).map((cls) => (
-                  <div key={cls.id} className="p-4 border rounded-lg hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <h5 className="font-medium text-lg">{cls.name}</h5>
-                        <p className="text-sm text-muted-foreground">
-                          Prof: {cls.instructor}
-                        </p>
-                      </div>
-                      <Badge variant={cls.students >= cls.capacity ? 'destructive' : 'secondary'}>
-                        {cls.students}/{cls.capacity}
-                      </Badge>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span>{cls.time} ({cls.duration}min)</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="h-4 w-4 text-gray-500" />
-                        <span>{cls.students} alunos inscritos</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <MapPin className="h-4 w-4 text-gray-500" />
-                        <span>{cls.location}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 bg-gray-50 rounded-lg">
-                <p className="text-muted-foreground">Nenhuma aula agendada para esta data.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+      {/* Modal de eventos do dia */}
+      <DayEventsDialog
+        open={dayEventsOpen}
+        onOpenChange={setDayEventsOpen}
+        selectedDate={selectedDayForModal}
+        dayClasses={selectedDayForModal ? getClassesForDate(selectedDayForModal) : []}
+        onEditClass={onEditClass}
+      />
     </div>
   );
 };

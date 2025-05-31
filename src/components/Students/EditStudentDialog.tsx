@@ -8,15 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useForm } from 'react-hook-form';
 import { useToast } from '@/hooks/use-toast';
-
-interface Student {
-  id: number;
-  name: string;
-  email: string;
-  plan: string;
-  status: string;
-  lastWorkout: string;
-}
+import { Student } from '@/types/student';
 
 interface EditStudentDialogProps {
   open: boolean;
@@ -28,8 +20,11 @@ interface EditStudentDialogProps {
 interface StudentForm {
   name: string;
   email: string;
+  phone: string;
   plan: string;
   status: string;
+  paymentMethod: 'Site' | 'Direto' | 'App';
+  dueDate?: string;
 }
 
 export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
@@ -45,8 +40,11 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
     if (student) {
       setValue('name', student.name);
       setValue('email', student.email);
+      setValue('phone', student.phone || '');
       setValue('plan', student.plan);
       setValue('status', student.status);
+      setValue('paymentMethod', student.paymentMethod);
+      setValue('dueDate', student.dueDate || '');
     }
   }, [student, setValue]);
 
@@ -67,6 +65,9 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
 
   const watchedStatus = watch('status');
   const watchedPlan = watch('plan');
+  const watchedPaymentMethod = watch('paymentMethod');
+
+  const showDueDate = watchedPaymentMethod === 'Site' || watchedPaymentMethod === 'Direto';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -96,6 +97,14 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="phone">WhatsApp</Label>
+            <Input
+              id="phone"
+              {...register('phone')}
+              placeholder="(11) 99999-9999"
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="plan">Plano</Label>
             <Select value={watchedPlan} onValueChange={(value) => setValue('plan', value)}>
               <SelectTrigger>
@@ -121,6 +130,29 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
+            <Select value={watchedPaymentMethod} onValueChange={(value) => setValue('paymentMethod', value as 'Site' | 'Direto' | 'App')}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione a forma de pagamento" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Site">Site</SelectItem>
+                <SelectItem value="Direto">Direto</SelectItem>
+                <SelectItem value="App">App</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {showDueDate && (
+            <div className="space-y-2">
+              <Label htmlFor="dueDate">Data de Vencimento</Label>
+              <Input
+                id="dueDate"
+                type="date"
+                {...register('dueDate')}
+              />
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-600">Preview:</span>
             <Badge variant={watchedStatus === 'Ativo' ? 'default' : 'secondary'}>

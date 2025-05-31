@@ -19,10 +19,12 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export const AppSidebar: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const { state } = useSidebar();
 
   const adminMenuItems = [
     { title: 'Dashboard', url: '/dashboard', icon: Home },
@@ -48,32 +50,35 @@ export const AppSidebar: React.FC = () => {
 
   const menuItems = user?.role === 'aluno' ? studentMenuItems : adminMenuItems;
   const groupLabel = user?.role === 'aluno' ? 'Área do Aluno' : 'Administração';
+  const isCollapsed = state === 'collapsed';
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
             <span className="text-white font-bold text-sm">F</span>
           </div>
-          <div>
-            <h1 className="text-lg font-semibold text-gray-900">FitApp</h1>
-            <p className="text-xs text-gray-500">Assessoria Esportiva</p>
-          </div>
+          {!isCollapsed && (
+            <div>
+              <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100">FitApp</h1>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Assessoria Esportiva</p>
+            </div>
+          )}
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>
+          {!isCollapsed && <SidebarGroupLabel>{groupLabel}</SidebarGroupLabel>}
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild isActive={location.pathname === item.url}>
+                  <SidebarMenuButton asChild isActive={location.pathname === item.url} tooltip={item.title}>
                     <Link to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      {!isCollapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -84,9 +89,11 @@ export const AppSidebar: React.FC = () => {
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        <div className="text-xs text-gray-500 text-center">
-          {user?.name} - {user?.role === 'aluno' ? 'Aluno' : user?.role === 'admin' ? 'Administrador' : 'Professor'}
-        </div>
+        {!isCollapsed && (
+          <div className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            {user?.name} - {user?.role === 'aluno' ? 'Aluno' : user?.role === 'admin' ? 'Administrador' : 'Professor'}
+          </div>
+        )}
       </SidebarFooter>
     </Sidebar>
   );
