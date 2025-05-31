@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { EditStudentDialog } from '@/components/Students/EditStudentDialog';
 import { ViewStudentDialog } from '@/components/Students/ViewStudentDialog';
 import { Student } from '@/types/student';
-import { usePaymentReminders } from '@/hooks/use-payment-reminders';
+import { usePaymentReminders } from '@/hooks/usePaymentReminders';
 
 export const StudentsPage: React.FC = () => {
   const { toast } = useToast();
