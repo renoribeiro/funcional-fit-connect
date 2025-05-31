@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Student } from '@/types/student';
+import { evolutionApi } from '@/services/evolutionApi';
 
 export const usePaymentReminders = (students: Student[]) => {
   const { toast } = useToast();
@@ -20,13 +21,19 @@ export const usePaymentReminders = (students: Student[]) => {
       });
 
       if (studentsNearDue.length > 0) {
-        // Aqui você integraria com a Evolution API v2
         console.log('Alunos com vencimento próximo:', studentsNearDue);
         
-        // Simular envio de lembretes
-        studentsNearDue.forEach(student => {
-          sendPaymentReminder(student);
-        });
+        // Enviar lembretes via WhatsApp se configurado
+        if (evolutionApi.isConfigured()) {
+          studentsNearDue.forEach(student => {
+            sendPaymentReminder(student);
+          });
+        } else {
+          // Fallback para simulação se WhatsApp não estiver configurado
+          studentsNearDue.forEach(student => {
+            console.log(`Lembrete seria enviado para ${student.name} (${student.phone})`);
+          });
+        }
 
         // Notificar administrador
         notifyAdmin(studentsNearDue);
@@ -44,26 +51,29 @@ export const usePaymentReminders = (students: Student[]) => {
 
   const sendPaymentReminder = async (student: Student) => {
     try {
-      // Aqui você faria a integração real com Evolution API v2
-      console.log(`Enviando lembrete para ${student.name} (${student.phone})`);
-      
-      // Simular chamada da API
-      const response = await fetch('/api/evolution/send-reminder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: student.phone,
-          message: `Olá ${student.name}! Seu pagamento do plano ${student.plan} vence em ${student.dueDate}. Não esqueça de renovar!`,
-        }),
-      });
-
-      if (response.ok) {
-        console.log(`Lembrete enviado com sucesso para ${student.name}`);
+      if (!student.phone) {
+        console.log(`Telefone não cadastrado para ${student.name}`);
+        return;
       }
+
+      const formattedPhone = evolutionApi.formatPhoneNumber(student.phone);
+      
+      await evolutionApi.sendPaymentReminder(
+        student.name,
+        formattedPhone,
+        student.plan,
+        student.dueDate!
+      );
+
+      console.log(`Lembrete de pagamento enviado para ${student.name}`);
     } catch (error) {
-      console.error('Erro ao enviar lembrete:', error);
+      console.error(`Erro ao enviar lembrete para ${student.name}:`, error);
+      
+      toast({
+        title: "Erro no Lembrete",
+        description: `Erro ao enviar lembrete para ${student.name}`,
+        variant: "destructive",
+      });
     }
   };
 
@@ -71,8 +81,14 @@ export const usePaymentReminders = (students: Student[]) => {
     try {
       const message = `Lembretes de pagamento enviados para ${studentsNearDue.length} aluno(s): ${studentsNearDue.map(s => s.name).join(', ')}`;
       
-      // Simular notificação para admin
       console.log('Notificando admin:', message);
+      
+      // Enviar notificação para admin via WhatsApp se configurado
+      if (evolutionApi.isConfigured()) {
+        // Aqui você pode configurar o telefone do admin
+        const adminPhone = '5511999999999'; // Configurar dinamicamente
+        await evolutionApi.sendAdminNotification(adminPhone, message);
+      }
       
       toast({
         title: "Lembretes Enviados",
