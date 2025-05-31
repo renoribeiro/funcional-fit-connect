@@ -26,7 +26,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#10B981', // Verde moderno
+					DEFAULT: '#10B981',
 					foreground: '#FFFFFF',
 					50: '#ECFDF5',
 					100: '#D1FAE5',
@@ -37,8 +37,8 @@ export default {
 					900: '#064E3B'
 				},
 				secondary: {
-					DEFAULT: '#6B7280', // Cinza moderno
-					foreground: '#FFFFFF',
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))',
 					50: '#F9FAFB',
 					100: '#F3F4F6',
 					200: '#E5E7EB',
@@ -51,34 +51,34 @@ export default {
 					900: '#111827'
 				},
 				destructive: {
-					DEFAULT: '#EF4444',
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--destructive))',
+					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: '#F3F4F6',
-					foreground: '#6B7280'
+					DEFAULT: 'hsl(var(--muted))',
+					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: '#10B981',
-					foreground: '#FFFFFF'
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
-					DEFAULT: '#FFFFFF',
-					foreground: '#111827'
+					DEFAULT: 'hsl(var(--popover))',
+					foreground: 'hsl(var(--popover-foreground))'
 				},
 				card: {
-					DEFAULT: '#FFFFFF',
-					foreground: '#111827'
+					DEFAULT: 'hsl(var(--card))',
+					foreground: 'hsl(var(--card-foreground))'
 				},
 				sidebar: {
-					DEFAULT: '#FFFFFF',
-					foreground: '#374151',
-					primary: '#10B981',
-					'primary-foreground': '#FFFFFF',
-					accent: '#F3F4F6',
-					'accent-foreground': '#374151',
-					border: '#E5E7EB',
-					ring: '#10B981'
+					DEFAULT: 'hsl(var(--sidebar-background))',
+					foreground: 'hsl(var(--sidebar-foreground))',
+					primary: 'hsl(var(--sidebar-primary))',
+					'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+					accent: 'hsl(var(--sidebar-accent))',
+					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+					border: 'hsl(var(--sidebar-border))',
+					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
 			borderRadius: {
@@ -92,6 +92,8 @@ export default {
 			boxShadow: {
 				'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
 				'soft-lg': '0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+				'dark-soft': '0 2px 15px -3px rgba(0, 0, 0, 0.25), 0 10px 20px -2px rgba(0, 0, 0, 0.15)',
+				'dark-soft-lg': '0 10px 25px -3px rgba(0, 0, 0, 0.3), 0 10px 20px -2px rgba(0, 0, 0, 0.2)',
 			},
 			keyframes: {
 				'accordion-down': {

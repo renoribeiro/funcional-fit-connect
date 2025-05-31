@@ -36,9 +36,9 @@ export const Header: React.FC = () => {
 
   const getRoleBadge = (role: string) => {
     const colors = {
-      admin: 'bg-red-100 text-red-800',
-      professor: 'bg-blue-100 text-blue-800',
-      aluno: 'bg-green-100 text-green-800'
+      admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+      professor: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+      aluno: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
     };
     
     const labels = {
@@ -103,26 +103,26 @@ export const Header: React.FC = () => {
   ];
 
   return (
-    <header className="h-16 border-b border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 px-6 flex items-center justify-between sticky top-0 z-50">
+    <header className="h-16 border-b bg-background dark:bg-background sticky top-0 z-50 px-6 flex items-center justify-between">
       <div className="flex items-center gap-4 flex-1">
         <SidebarTrigger />
         
         <div className="relative max-w-md ml-4">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Pesquisar alunos, aulas, funções..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-10 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-600 focus:bg-white dark:focus:bg-gray-700 transition-colors"
+            className="pl-10 bg-muted/50 border-border focus:bg-background transition-colors"
           />
           
           {/* Resultados da pesquisa */}
           {searchResults.length > 0 && (
-            <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-md shadow-lg z-50">
+            <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg dark:shadow-dark-soft-lg z-50">
               {searchResults.map((result, index) => (
-                <div key={index} className="p-3 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-100 dark:border-gray-600 last:border-b-0">
-                  <div className="font-medium text-gray-900 dark:text-gray-100">{result.name}</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">{result.type} • {result.detail}</div>
+                <div key={index} className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0">
+                  <div className="font-medium text-foreground">{result.name}</div>
+                  <div className="text-sm text-muted-foreground">{result.type} • {result.detail}</div>
                 </div>
               ))}
             </div>
@@ -132,21 +132,21 @@ export const Header: React.FC = () => {
 
       <div className="flex items-center gap-4">
         {/* Toggle de tema */}
-        <Button variant="ghost" size="sm" onClick={toggleTheme}>
+        <Button variant="ghost" size="sm" onClick={toggleTheme} className="text-muted-foreground hover:text-foreground">
           {theme === 'light' ? <Moon className="h-5 w-5" /> : <Sun className="h-5 w-5" />}
         </Button>
 
         {/* Notificações */}
         <Dialog open={notificationsOpen} onOpenChange={setNotificationsOpen}>
           <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative" onClick={handleNotifications}>
-              <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+            <Button variant="ghost" size="sm" className="relative text-muted-foreground hover:text-foreground" onClick={handleNotifications}>
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive rounded-full text-xs text-destructive-foreground flex items-center justify-center">
                 3
               </span>
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-popover">
             <DialogHeader>
               <DialogTitle>Notificações</DialogTitle>
               <DialogDescription>
@@ -155,10 +155,10 @@ export const Header: React.FC = () => {
             </DialogHeader>
             <div className="space-y-3">
               {notifications.map((notification) => (
-                <div key={notification.id} className="p-3 border rounded-lg">
-                  <h4 className="font-medium">{notification.title}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{notification.description}</p>
-                  <span className="text-xs text-gray-500">{notification.time} atrás</span>
+                <div key={notification.id} className="p-3 border border-border rounded-lg bg-card">
+                  <h4 className="font-medium text-card-foreground">{notification.title}</h4>
+                  <p className="text-sm text-muted-foreground">{notification.description}</p>
+                  <span className="text-xs text-muted-foreground">{notification.time} atrás</span>
                 </div>
               ))}
             </div>
@@ -167,20 +167,20 @@ export const Header: React.FC = () => {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center gap-3 hover:bg-gray-50 dark:hover:bg-gray-800">
+            <Button variant="ghost" className="flex items-center gap-3 hover:bg-accent">
               <Avatar className="h-8 w-8">
                 <AvatarImage src={user?.avatar} />
-                <AvatarFallback className="bg-primary-100 text-primary-700">
+                <AvatarFallback className="bg-primary text-primary-foreground">
                   {user?.name?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{user?.name}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{user?.email}</p>
+                <p className="text-sm font-medium text-foreground">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 bg-popover">
             <DropdownMenuLabel className="flex items-center gap-2">
               <span>Minha Conta</span>
               {user?.role && getRoleBadge(user.role)}
@@ -195,7 +195,7 @@ export const Header: React.FC = () => {
               Configurações
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-red-600">
+            <DropdownMenuItem onClick={logout} className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               Sair
             </DropdownMenuItem>
