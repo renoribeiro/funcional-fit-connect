@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Users, Search, Plus, Eye, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -105,65 +106,65 @@ export const StudentsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gerenciar Alunos</h1>
-        <p className="text-gray-600 mt-2">Visualize e gerencie todos os alunos cadastrados</p>
+        <h1 className="text-3xl font-bold text-foreground">Gerenciar Alunos</h1>
+        <p className="text-muted-foreground mt-2">Visualize e gerencie todos os alunos cadastrados</p>
       </div>
 
       <div className="flex justify-between items-center gap-4">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
             placeholder="Buscar alunos..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-background border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
-        <Button onClick={handleAddStudent} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={handleAddStudent} className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Plus className="h-4 w-4 mr-2" />
           Novo Aluno
         </Button>
       </div>
 
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5 text-green-600" />
+          <CardTitle className="flex items-center gap-2 text-card-foreground">
+            <Users className="h-5 w-5 text-primary" />
             Lista de Alunos
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             Total de {filteredStudents.length} alunos encontrados
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             {filteredStudents.map((student) => (
-              <div key={student.id} className="flex items-center justify-between p-4 border rounded-lg bg-white hover:bg-gray-50 transition-colors">
+              <div key={student.id} className="flex items-center justify-between p-4 border border-border rounded-lg bg-card hover:bg-accent/50 transition-colors">
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{student.name}</h3>
-                  <p className="text-sm text-gray-600">{student.email}</p>
-                  <p className="text-sm text-gray-600">{student.phone}</p>
+                  <h3 className="font-medium text-card-foreground">{student.name}</h3>
+                  <p className="text-sm text-muted-foreground">{student.email}</p>
+                  <p className="text-sm text-muted-foreground">{student.phone}</p>
                   <div className="flex items-center gap-2 mt-2">
                     <Badge variant={student.status === 'Ativo' ? 'default' : 'secondary'}>
                       {student.status}
                     </Badge>
-                    <span className="text-xs text-gray-500">Plano: {student.plan}</span>
-                    <span className="text-xs text-gray-500">Pagamento: {student.paymentMethod}</span>
+                    <span className="text-xs text-muted-foreground">Plano: {student.plan}</span>
+                    <span className="text-xs text-muted-foreground">Pagamento: {student.paymentMethod}</span>
                     {student.dueDate && (
-                      <span className="text-xs text-gray-500">Vence: {student.dueDate}</span>
+                      <span className="text-xs text-muted-foreground">Vence: {student.dueDate}</span>
                     )}
-                    <span className="text-xs text-gray-500">Último treino: {student.lastWorkout}</span>
+                    <span className="text-xs text-muted-foreground">Último treino: {student.lastWorkout}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="outline" size="sm" onClick={() => handleViewStudent(student)}>
+                  <Button variant="outline" size="sm" onClick={() => handleViewStudent(student)} className="border-border hover:bg-accent">
                     <Eye className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleEditStudent(student)}>
+                  <Button variant="outline" size="sm" onClick={() => handleEditStudent(student)} className="border-border hover:bg-accent">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="sm" onClick={() => handleDeleteStudent(student.id)}>
-                    <Trash2 className="h-4 w-4 text-red-600" />
+                  <Button variant="outline" size="sm" onClick={() => handleDeleteStudent(student.id)} className="border-border hover:bg-accent">
+                    <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
                 </div>
               </div>
