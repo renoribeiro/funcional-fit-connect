@@ -108,8 +108,8 @@ export const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard Administrativo</h1>
-        <p className="text-gray-600 mt-2">Visão geral da sua assessoria esportiva</p>
+        <h1 className="text-3xl font-bold text-foreground">Dashboard Administrativo</h1>
+        <p className="text-muted-foreground mt-2">Visão geral da sua assessoria esportiva</p>
       </div>
 
       {/* Stats Cards */}
@@ -127,25 +127,25 @@ export const AdminDashboard: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Atividades Recentes */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-primary-600" />
+            <CardTitle className="flex items-center gap-2 text-card-foreground">
+              <Activity className="h-5 w-5 text-primary" />
               Atividades Recentes
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground">
               Últimas ações dos usuários na plataforma
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
-                <div className="w-2 h-2 rounded-full bg-primary-500"></div>
+              <div key={activity.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                <div className="w-2 h-2 rounded-full bg-primary"></div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-900">{activity.user}</p>
-                  <p className="text-xs text-gray-600">{activity.action}</p>
+                  <p className="text-sm font-medium text-card-foreground">{activity.user}</p>
+                  <p className="text-xs text-muted-foreground">{activity.action}</p>
                 </div>
-                <span className="text-xs text-gray-500">{activity.time}</span>
+                <span className="text-xs text-muted-foreground">{activity.time}</span>
               </div>
             ))}
             <Button variant="outline" className="w-full mt-4" onClick={handleViewAllActivities}>
@@ -155,28 +155,28 @@ export const AdminDashboard: React.FC = () => {
         </Card>
 
         {/* Aulas de Hoje */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary-600" />
+            <CardTitle className="flex items-center gap-2 text-card-foreground">
+              <Calendar className="h-5 w-5 text-primary" />
               Aulas de Hoje
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground">
               Cronograma de aulas programadas
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {upcomingClasses.map((class_) => (
-              <div key={class_.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={class_.id} className="flex items-center justify-between p-3 border border-border rounded-lg bg-muted/30">
                 <div>
-                  <p className="font-medium text-gray-900">{class_.name}</p>
-                  <p className="text-sm text-gray-600">{class_.time}</p>
+                  <p className="font-medium text-card-foreground">{class_.name}</p>
+                  <p className="text-sm text-muted-foreground">{class_.time}</p>
                 </div>
                 <div className="text-right">
                   <Badge variant={class_.students >= class_.capacity ? 'destructive' : 'secondary'}>
                     {class_.students}/{class_.capacity}
                   </Badge>
-                  <p className="text-xs text-gray-500 mt-1">alunos</p>
+                  <p className="text-xs text-muted-foreground mt-1">alunos</p>
                 </div>
               </div>
             ))}
@@ -189,32 +189,32 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Alertas e Notificações */}
-      <Card>
+      <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bell className="h-5 w-5 text-primary-600" />
+          <CardTitle className="flex items-center gap-2 text-card-foreground">
+            <Bell className="h-5 w-5 text-primary" />
             Alertas e Notificações
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <h4 className="font-medium text-yellow-800">Pagamentos Pendentes</h4>
-              <p className="text-sm text-yellow-700 mt-1">5 alunos com mensalidades em atraso</p>
+            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+              <h4 className="font-medium text-yellow-800 dark:text-yellow-200">Pagamentos Pendentes</h4>
+              <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">5 alunos com mensalidades em atraso</p>
               <Button size="sm" variant="outline" className="mt-2" onClick={handleVerifyPayments}>
                 Verificar
               </Button>
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <h4 className="font-medium text-blue-800">Bioimpedâncias</h4>
-              <p className="text-sm text-blue-700 mt-1">12 alunos precisam atualizar dados</p>
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <h4 className="font-medium text-blue-800 dark:text-blue-200">Bioimpedâncias</h4>
+              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">12 alunos precisam atualizar dados</p>
               <Button size="sm" variant="outline" className="mt-2" onClick={handleNotifyBioimpedance}>
                 Notificar
               </Button>
             </div>
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <h4 className="font-medium text-green-800">Meta Mensal</h4>
-              <p className="text-sm text-green-700 mt-1">85% da meta de novos alunos atingida</p>
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <h4 className="font-medium text-green-800 dark:text-green-200">Meta Mensal</h4>
+              <p className="text-sm text-green-700 dark:text-green-300 mt-1">85% da meta de novos alunos atingida</p>
               <Button size="sm" variant="outline" className="mt-2" onClick={handleViewMonthlyGoals}>
                 Detalhes
               </Button>

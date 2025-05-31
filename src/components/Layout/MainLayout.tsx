@@ -78,13 +78,13 @@ export const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 w-full">
+    <div className="min-h-screen bg-background w-full">
       <SidebarProvider>
         <div className="min-h-screen flex w-full">
           <AppSidebar />
           <div className="flex-1 flex flex-col">
             <Header />
-            <main className="flex-1 p-6">
+            <main className="flex-1 p-6 bg-background">
               <div className="max-w-7xl mx-auto">
                 {renderRoutes()}
               </div>
