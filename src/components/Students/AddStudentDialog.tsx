@@ -20,7 +20,7 @@ interface StudentForm {
   email: string;
   phone: string;
   plan: string;
-  paymentMethod: string;
+  paymentMethod: 'Site' | 'Direto' | 'App' | 'PIX' | 'Cartão';
   dueDate?: string;
 }
 
@@ -130,7 +130,7 @@ export const AddStudentDialog: React.FC<AddStudentDialogProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="paymentMethod">Método de Pagamento</Label>
-              <Select value={watchedPaymentMethod} onValueChange={(value) => setValue('paymentMethod', value)}>
+              <Select value={watchedPaymentMethod} onValueChange={(value: 'Site' | 'Direto' | 'App' | 'PIX' | 'Cartão') => setValue('paymentMethod', value)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o método" />
                 </SelectTrigger>

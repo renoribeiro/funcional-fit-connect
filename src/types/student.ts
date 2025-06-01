@@ -6,7 +6,7 @@ export interface Student {
   plan: string;
   status: string;
   lastWorkout: string;
-  paymentMethod: 'Site' | 'Direto' | 'App';
+  paymentMethod: 'Site' | 'Direto' | 'App' | 'PIX' | 'Cartão';
   dueDate?: string; // Only for Site and Direto
   phone?: string; // For WhatsApp reminders
 }
