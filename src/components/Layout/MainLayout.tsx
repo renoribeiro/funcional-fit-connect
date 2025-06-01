@@ -23,8 +23,11 @@ import { AttendancePage } from '@/pages/student/AttendancePage';
 import { VideosPage } from '@/pages/student/VideosPage';
 import { ChatPage } from '@/pages/student/ChatPage';
 import { MessagesPage } from '@/pages/student/MessagesPage';
-import { ProfilePage } from '@/pages/student/ProfilePage';
+import { ProfilePage as StudentProfilePage } from '@/pages/student/ProfilePage';
 import { SubscriptionPage } from '@/pages/student/SubscriptionPage';
+
+// Página de Perfil Comum
+import { ProfilePage } from '@/pages/ProfilePage';
 
 import NotFound from '@/pages/NotFound';
 
@@ -40,6 +43,7 @@ export const MainLayout: React.FC = () => {
         <Route path="/dashboard" element={
           user?.role === 'aluno' ? <StudentDashboard /> : <AdminDashboard />
         } />
+        <Route path="/profile" element={<ProfilePage />} />
       </>
     );
 
@@ -62,7 +66,6 @@ export const MainLayout: React.FC = () => {
         <Route path="/videos" element={<VideosPage />} />
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/messages" element={<MessagesPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
       </>
     );

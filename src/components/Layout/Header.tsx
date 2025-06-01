@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Bell, Search, User, LogOut, Settings, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,7 @@ export const Header: React.FC = () => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -83,17 +84,11 @@ export const Header: React.FC = () => {
   };
 
   const handleProfile = () => {
-    toast({
-      title: "Perfil",
-      description: "Redirecionando para página de perfil...",
-    });
+    navigate('/profile');
   };
 
   const handleSettings = () => {
-    toast({
-      title: "Configurações",
-      description: "Redirecionando para configurações...",
-    });
+    navigate('/settings');
   };
 
   const notifications = [
