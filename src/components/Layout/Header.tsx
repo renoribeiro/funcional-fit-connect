@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Bell, Search, User, LogOut, Settings, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -61,9 +62,9 @@ export const Header: React.FC = () => {
     if (value.length > 2) {
       // Simular busca em diferentes entidades
       const mockResults = [
-        { type: 'aluno', name: 'Maria Santos', detail: 'Plano Premium' },
-        { type: 'aula', name: 'Yoga & Pilates', detail: '14:00 - Sala Zen' },
-        { type: 'função', name: 'Gerenciar Alunos', detail: 'Página administrativa' },
+        { type: 'aluno', name: 'Maria Santos', detail: 'Plano Premium', route: '/students' },
+        { type: 'aula', name: 'Yoga & Pilates', detail: '14:00 - Sala Zen', route: '/activities' },
+        { type: 'função', name: 'Gerenciar Alunos', detail: 'Página administrativa', route: '/students' },
       ].filter(item => 
         item.name.toLowerCase().includes(value.toLowerCase()) ||
         item.detail.toLowerCase().includes(value.toLowerCase())
@@ -73,6 +74,12 @@ export const Header: React.FC = () => {
     } else {
       setSearchResults([]);
     }
+  };
+
+  const handleSearchResultClick = (result: any) => {
+    navigate(result.route);
+    setSearchTerm('');
+    setSearchResults([]);
   };
 
   const handleNotifications = () => {
@@ -115,7 +122,11 @@ export const Header: React.FC = () => {
           {searchResults.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg dark:shadow-dark-soft-lg z-50">
               {searchResults.map((result, index) => (
-                <div key={index} className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0">
+                <div 
+                  key={index} 
+                  className="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-border last:border-b-0 rounded-md transition-colors"
+                  onClick={() => handleSearchResultClick(result)}
+                >
                   <div className="font-medium text-foreground">{result.name}</div>
                   <div className="text-sm text-muted-foreground">{result.type} • {result.detail}</div>
                 </div>
