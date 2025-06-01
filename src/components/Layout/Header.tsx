@@ -36,6 +36,66 @@ export const Header: React.FC = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
+  // Database simulado de alunos
+  const mockStudents = [
+    { id: 1, name: 'Maria Santos', email: 'maria@email.com', plan: 'Premium' },
+    { id: 2, name: 'João Silva', email: 'joao@email.com', plan: 'Básico' },
+    { id: 3, name: 'Ana Costa', email: 'ana@email.com', plan: 'Premium' },
+    { id: 4, name: 'Carlos Oliveira', email: 'carlos@email.com', plan: 'Intermediário' },
+    { id: 5, name: 'Pedro Santos', email: 'pedro@email.com', plan: 'Básico' },
+    { id: 6, name: 'Lucia Ferreira', email: 'lucia@email.com', plan: 'Premium' },
+  ];
+
+  // Base de dados completa para busca
+  const searchDatabase = [
+    // Páginas Administrativas
+    { type: 'página', name: 'Dashboard', detail: 'Painel administrativo principal', route: '/dashboard', category: 'admin' },
+    { type: 'página', name: 'Gerenciar Alunos', detail: 'Lista e gestão de alunos', route: '/students', category: 'admin' },
+    { type: 'página', name: 'Pagamentos', detail: 'Controle financeiro e mensalidades', route: '/payments', category: 'admin' },
+    { type: 'página', name: 'Calendário', detail: 'Agenda de aulas e eventos', route: '/calendar', category: 'admin' },
+    { type: 'página', name: 'Atividades', detail: 'Gestão de aulas e exercícios', route: '/activities', category: 'admin' },
+    { type: 'página', name: 'Biometria', detail: 'Controle de acesso e presença', route: '/biometry', category: 'admin' },
+    { type: 'página', name: 'Metas', detail: 'Objetivos e acompanhamento', route: '/goals', category: 'admin' },
+    { type: 'página', name: 'Configurações', detail: 'Configurações do sistema', route: '/settings', category: 'admin' },
+    { type: 'página', name: 'Perfil', detail: 'Editar perfil do usuário', route: '/profile', category: 'common' },
+
+    // Páginas do Aluno
+    { type: 'página', name: 'Plano de Treino', detail: 'Exercícios personalizados', route: '/workout-plan', category: 'student' },
+    { type: 'página', name: 'Frequência', detail: 'Histórico de presença', route: '/attendance', category: 'student' },
+    { type: 'página', name: 'Vídeos', detail: 'Biblioteca de exercícios', route: '/videos', category: 'student' },
+    { type: 'página', name: 'Chat', detail: 'Conversa com instrutor', route: '/chat', category: 'student' },
+    { type: 'página', name: 'Mensagens', detail: 'Central de mensagens', route: '/messages', category: 'student' },
+    { type: 'página', name: 'Assinatura', detail: 'Planos e pagamentos', route: '/subscription', category: 'student' },
+
+    // Funções/Funcionalidades
+    { type: 'função', name: 'Adicionar Aluno', detail: 'Cadastrar novo membro', route: '/students', category: 'admin' },
+    { type: 'função', name: 'Editar Aluno', detail: 'Modificar dados do aluno', route: '/students', category: 'admin' },
+    { type: 'função', name: 'Excluir Aluno', detail: 'Remover aluno do sistema', route: '/students', category: 'admin' },
+    { type: 'função', name: 'Buscar Alunos', detail: 'Pesquisar na base de dados', route: '/students', category: 'admin' },
+    { type: 'função', name: 'Controle de Pagamentos', detail: 'Gestão financeira', route: '/payments', category: 'admin' },
+    { type: 'função', name: 'Agendar Aula', detail: 'Criar evento no calendário', route: '/calendar', category: 'admin' },
+    { type: 'função', name: 'Gerenciar Usuários', detail: 'Administrar contas do sistema', route: '/settings', category: 'admin' },
+    { type: 'função', name: 'Configurar WhatsApp', detail: 'Integração de mensagens', route: '/settings', category: 'admin' },
+    { type: 'função', name: 'Notificações', detail: 'Central de avisos', route: '/', category: 'common' },
+    { type: 'função', name: 'Alternar Tema', detail: 'Modo claro/escuro', route: '/', category: 'common' },
+    { type: 'função', name: 'Logout', detail: 'Sair do sistema', route: '/', category: 'common' },
+
+    // Configurações específicas
+    { type: 'configuração', name: 'Criar Usuário', detail: 'Adicionar novo usuário ao sistema', route: '/settings', category: 'admin' },
+    { type: 'configuração', name: 'Editar Usuário', detail: 'Modificar permissões de usuário', route: '/settings', category: 'admin' },
+    { type: 'configuração', name: 'Excluir Usuário', detail: 'Remover usuário do sistema', route: '/settings', category: 'admin' },
+    { type: 'configuração', name: 'WhatsApp Webhook', detail: 'Configurar integração WhatsApp', route: '/settings', category: 'admin' },
+    { type: 'configuração', name: 'Lembretes de Pagamento', detail: 'Automatizar cobranças', route: '/settings', category: 'admin' },
+    { type: 'configuração', name: 'Preferências do Sistema', detail: 'Configurações gerais', route: '/settings', category: 'admin' },
+
+    // Atividades e Aulas
+    { type: 'aula', name: 'Yoga & Pilates', detail: '14:00 - Sala Zen', route: '/activities', category: 'admin' },
+    { type: 'aula', name: 'HIIT Avançado', detail: '18:00 - Sala Principal', route: '/activities', category: 'admin' },
+    { type: 'aula', name: 'Musculação Iniciante', detail: '08:00 - Área de Pesos', route: '/activities', category: 'admin' },
+    { type: 'aula', name: 'Spinning', detail: '19:00 - Sala de Bike', route: '/activities', category: 'admin' },
+    { type: 'aula', name: 'Funcional', detail: '16:00 - Área Externa', route: '/activities', category: 'admin' },
+  ];
+
   const getRoleBadge = (role: string) => {
     const colors = {
       admin: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
@@ -59,18 +119,62 @@ export const Header: React.FC = () => {
   const handleSearch = (value: string) => {
     setSearchTerm(value);
     
-    if (value.length > 2) {
-      // Simular busca em diferentes entidades
-      const mockResults = [
-        { type: 'aluno', name: 'Maria Santos', detail: 'Plano Premium', route: '/students' },
-        { type: 'aula', name: 'Yoga & Pilates', detail: '14:00 - Sala Zen', route: '/activities' },
-        { type: 'função', name: 'Gerenciar Alunos', detail: 'Página administrativa', route: '/students' },
-      ].filter(item => 
-        item.name.toLowerCase().includes(value.toLowerCase()) ||
-        item.detail.toLowerCase().includes(value.toLowerCase())
-      );
-      
-      setSearchResults(mockResults);
+    if (value.length > 1) {
+      let results: any[] = [];
+
+      // Buscar na base de dados do sistema
+      const systemResults = searchDatabase.filter(item => {
+        const searchLower = value.toLowerCase();
+        return (
+          item.name.toLowerCase().includes(searchLower) ||
+          item.detail.toLowerCase().includes(searchLower) ||
+          item.type.toLowerCase().includes(searchLower)
+        );
+      }).filter(item => {
+        // Filtrar por permissões do usuário
+        if (item.category === 'admin') {
+          return user?.role === 'admin' || user?.role === 'professor';
+        }
+        if (item.category === 'student') {
+          return user?.role === 'aluno';
+        }
+        return true; // common
+      });
+
+      // Buscar alunos (apenas para admin/professor)
+      if (user?.role === 'admin' || user?.role === 'professor') {
+        const studentResults = mockStudents.filter(student => {
+          const searchLower = value.toLowerCase();
+          return (
+            student.name.toLowerCase().includes(searchLower) ||
+            student.email.toLowerCase().includes(searchLower) ||
+            student.plan.toLowerCase().includes(searchLower)
+          );
+        }).map(student => ({
+          type: 'aluno',
+          name: student.name,
+          detail: `${student.plan} • ${student.email}`,
+          route: '/students',
+          category: 'admin'
+        }));
+
+        results = [...systemResults, ...studentResults];
+      } else {
+        results = systemResults;
+      }
+
+      // Limitar resultados e ordenar por relevância
+      results = results
+        .sort((a, b) => {
+          const aNameMatch = a.name.toLowerCase().startsWith(value.toLowerCase());
+          const bNameMatch = b.name.toLowerCase().startsWith(value.toLowerCase());
+          if (aNameMatch && !bNameMatch) return -1;
+          if (!aNameMatch && bNameMatch) return 1;
+          return 0;
+        })
+        .slice(0, 8);
+
+      setSearchResults(results);
     } else {
       setSearchResults([]);
     }
@@ -112,7 +216,7 @@ export const Header: React.FC = () => {
         <div className="relative max-w-md ml-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
           <Input
-            placeholder="Pesquisar alunos, aulas, funções..."
+            placeholder="Pesquisar alunos, aulas, funções, páginas..."
             value={searchTerm}
             onChange={(e) => handleSearch(e.target.value)}
             className="pl-10 bg-muted/50 border-border focus:bg-background transition-colors"
