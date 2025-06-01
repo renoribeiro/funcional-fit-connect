@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MessageSquare, Send, Settings, Webhook } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { evolutionApi } from '@/services/evolutionApi';
 
 interface WhatsAppConfigDialogProps {
   open: boolean;
@@ -28,20 +29,28 @@ export const WhatsAppConfigDialog: React.FC<WhatsAppConfigDialogProps> = ({
   const [testMessage, setTestMessage] = useState('Olá! Esta é uma mensagem de teste da Evolution API v2.');
   const [isConnecting, setIsConnecting] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  
+  // Templates state
+  const [templates, setTemplates] = useState({
+    paymentReminder: 'Olá {NOME}! Seu pagamento do plano {PLANO} vence em {DATA}. Não esqueça de renovar!',
+    welcomeMessage: 'Bem-vindo(a) {NOME}! Estamos felizes em tê-lo(a) conosco. Seu plano {PLANO} está ativo!',
+    workoutReminder: 'Olá {NOME}! Lembrando que você tem treino marcado para {DATA} às {HORA}.',
+    adminNotification: '[ADMIN] {MENSAGEM}',
+  });
 
   const handleSaveConfig = async () => {
     try {
       setIsConnecting(true);
       
-      // Simular salvamento da configuração
       const config = {
         apiKey,
         instanceName,
         serverUrl,
         webhookUrl,
+        templates,
       };
       
-      localStorage.setItem('whatsapp_config', JSON.stringify(config));
+      evolutionApi.saveConfig(config);
       
       toast({
         title: "Configuração Salva",
@@ -138,14 +147,15 @@ export const WhatsAppConfigDialog: React.FC<WhatsAppConfigDialogProps> = ({
   };
 
   React.useEffect(() => {
-    // Carregar configurações salvas
-    const savedConfig = localStorage.getItem('whatsapp_config');
+    const savedConfig = evolutionApi.getConfig();
     if (savedConfig) {
-      const config = JSON.parse(savedConfig);
-      setApiKey(config.apiKey || '');
-      setInstanceName(config.instanceName || '');
-      setServerUrl(config.serverUrl || '');
-      setWebhookUrl(config.webhookUrl || '');
+      setApiKey(savedConfig.apiKey || '');
+      setInstanceName(savedConfig.instanceName || '');
+      setServerUrl(savedConfig.serverUrl || '');
+      setWebhookUrl(savedConfig.webhookUrl || '');
+      if (savedConfig.templates) {
+        setTemplates(savedConfig.templates);
+      }
     }
   }, [open]);
 
@@ -295,30 +305,80 @@ export const WhatsAppConfigDialog: React.FC<WhatsAppConfigDialogProps> = ({
               <CardHeader>
                 <CardTitle>Templates de Mensagens</CardTitle>
                 <CardDescription>
-                  Templates para lembretes e notificações
+                  Personalize as mensagens enviadas automaticamente. Use as variáveis disponíveis para personalização.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">Lembrete de Pagamento</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      "Olá [NOME]! Seu pagamento do plano [PLANO] vence em [DATA]. Não esqueça de renovar!"
-                    </p>
-                  </div>
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">Confirmação de Treino</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      "Olá [NOME]! Lembrando que você tem treino marcado para [DATA] às [HORA]."
-                    </p>
-                  </div>
-                  <div className="p-3 border rounded-lg">
-                    <h4 className="font-medium">Boas-vindas</h4>
-                    <p className="text-sm text-gray-600 mt-1">
-                      "Bem-vindo(a) [NOME]! Estamos felizes em tê-lo(a) conosco. Seu plano [PLANO] está ativo!"
-                    </p>
-                  </div>
+              <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="paymentReminder">Lembrete de Pagamento</Label>
+                  <Textarea
+                    id="paymentReminder"
+                    value={templates.paymentReminder}
+                    onChange={(e) => setTemplates(prev => ({ ...prev, paymentReminder: e.target.value }))}
+                    rows={3}
+                    placeholder="Mensagem para lembrete de pagamento"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Variáveis disponíveis: {'{NOME}'}, {'{PLANO}'}, {'{DATA}'}
+                  </p>
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="welcomeMessage">Mensagem de Boas-vindas</Label>
+                  <Textarea
+                    id="welcomeMessage"
+                    value={templates.welcomeMessage}
+                    onChange={(e) => setTemplates(prev => ({ ...prev, welcomeMessage: e.target.value }))}
+                    rows={3}
+                    placeholder="Mensagem de boas-vindas para novos alunos"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Variáveis disponíveis: {'{NOME}'}, {'{PLANO}'}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="workoutReminder">Lembrete de Treino</Label>
+                  <Textarea
+                    id="workoutReminder"
+                    value={templates.workoutReminder}
+                    onChange={(e) => setTemplates(prev => ({ ...prev, workoutReminder: e.target.value }))}
+                    rows={3}
+                    placeholder="Mensagem para lembrete de treino"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Variáveis disponíveis: {'{NOME}'}, {'{DATA}'}, {'{HORA}'}
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="adminNotification">Notificação de Admin</Label>
+                  <Textarea
+                    id="adminNotification"
+                    value={templates.adminNotification}
+                    onChange={(e) => setTemplates(prev => ({ ...prev, adminNotification: e.target.value }))}
+                    rows={2}
+                    placeholder="Formato para notificações de administrador"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Variáveis disponíveis: {'{MENSAGEM}'}
+                  </p>
+                </div>
+
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">Como usar as variáveis:</h4>
+                  <ul className="text-sm text-blue-700 space-y-1">
+                    <li><code>{'{NOME}'}</code> - Nome do aluno</li>
+                    <li><code>{'{PLANO}'}</code> - Plano do aluno</li>
+                    <li><code>{'{DATA}'}</code> - Data (vencimento ou treino)</li>
+                    <li><code>{'{HORA}'}</code> - Horário do treino</li>
+                    <li><code>{'{MENSAGEM}'}</code> - Conteúdo da notificação</li>
+                  </ul>
+                </div>
+
+                <Button onClick={handleSaveConfig} disabled={isConnecting} className="w-full">
+                  {isConnecting ? "Salvando..." : "Salvar Templates"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>

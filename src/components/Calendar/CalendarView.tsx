@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -93,7 +92,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     if (dayClasses.length === 0) {
       return (
         <button
-          className="h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md"
+          className="h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md relative"
           onClick={() => handleDayClick(day)}
         >
           {day.getDate()}
@@ -108,8 +107,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             className="relative h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md flex items-center justify-center"
             onClick={() => handleDayClick(day)}
           >
-            <span>{day.getDate()}</span>
-            <div className="absolute -top-1 -right-1 w-2 h-2 bg-primary rounded-full"></div>
+            {/* Indicador circular atrás do número */}
+            <div className="absolute inset-0 w-7 h-7 bg-primary/20 rounded-full m-auto z-0"></div>
+            {/* Número do dia */}
+            <span className="relative z-10">{day.getDate()}</span>
           </button>
         </HoverCardTrigger>
         <HoverCardContent side="top" className="w-80">
@@ -195,7 +196,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 modifiersStyles={{
                   hasClasses: {
                     fontWeight: 'bold',
-                    color: 'var(--primary)',
                   },
                 }}
                 components={{
@@ -221,7 +221,6 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 modifiersStyles={{
                   hasClasses: {
                     fontWeight: 'bold',
-                    color: 'var(--primary)',
                   },
                 }}
                 components={{

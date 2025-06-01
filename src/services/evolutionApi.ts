@@ -1,9 +1,14 @@
-
 export interface WhatsAppConfig {
   apiKey: string;
   instanceName: string;
   serverUrl: string;
   webhookUrl?: string;
+  templates?: {
+    paymentReminder: string;
+    welcomeMessage: string;
+    workoutReminder: string;
+    adminNotification: string;
+  };
 }
 
 export interface SendMessageParams {
@@ -36,6 +41,15 @@ export class EvolutionApiService {
     if (savedConfig) {
       this.config = JSON.parse(savedConfig);
     }
+  }
+
+  public saveConfig(config: WhatsAppConfig): void {
+    this.config = config;
+    localStorage.setItem('whatsapp_config', JSON.stringify(config));
+  }
+
+  public getConfig(): WhatsAppConfig | null {
+    return this.config;
   }
 
   public isConfigured(): boolean {
@@ -77,7 +91,13 @@ export class EvolutionApiService {
   }
 
   public async sendPaymentReminder(studentName: string, studentPhone: string, plan: string, dueDate: string): Promise<void> {
-    const message = `Olá ${studentName}! Seu pagamento do plano ${plan} vence em ${dueDate}. Não esqueça de renovar!`;
+    const template = this.config?.templates?.paymentReminder || 
+      'Olá {NOME}! Seu pagamento do plano {PLANO} vence em {DATA}. Não esqueça de renovar!';
+    
+    const message = template
+      .replace('{NOME}', studentName)
+      .replace('{PLANO}', plan)
+      .replace('{DATA}', dueDate);
     
     await this.sendTextMessage({
       number: studentPhone,
@@ -86,7 +106,12 @@ export class EvolutionApiService {
   }
 
   public async sendWelcomeMessage(studentName: string, studentPhone: string, plan: string): Promise<void> {
-    const message = `Bem-vindo(a) ${studentName}! Estamos felizes em tê-lo(a) conosco. Seu plano ${plan} está ativo!`;
+    const template = this.config?.templates?.welcomeMessage || 
+      'Bem-vindo(a) {NOME}! Estamos felizes em tê-lo(a) conosco. Seu plano {PLANO} está ativo!';
+    
+    const message = template
+      .replace('{NOME}', studentName)
+      .replace('{PLANO}', plan);
     
     await this.sendTextMessage({
       number: studentPhone,
@@ -95,7 +120,13 @@ export class EvolutionApiService {
   }
 
   public async sendWorkoutReminder(studentName: string, studentPhone: string, date: string, time: string): Promise<void> {
-    const message = `Olá ${studentName}! Lembrando que você tem treino marcado para ${date} às ${time}.`;
+    const template = this.config?.templates?.workoutReminder || 
+      'Olá {NOME}! Lembrando que você tem treino marcado para {DATA} às {HORA}.';
+    
+    const message = template
+      .replace('{NOME}', studentName)
+      .replace('{DATA}', date)
+      .replace('{HORA}', time);
     
     await this.sendTextMessage({
       number: studentPhone,
@@ -104,9 +135,13 @@ export class EvolutionApiService {
   }
 
   public async sendAdminNotification(adminPhone: string, message: string): Promise<void> {
+    const template = this.config?.templates?.adminNotification || '[ADMIN] {MENSAGEM}';
+    
+    const finalMessage = template.replace('{MENSAGEM}', message);
+    
     await this.sendTextMessage({
       number: adminPhone,
-      text: `[ADMIN] ${message}`,
+      text: finalMessage,
     });
   }
 

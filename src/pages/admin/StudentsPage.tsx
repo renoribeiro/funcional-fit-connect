@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { EditStudentDialog } from '@/components/Students/EditStudentDialog';
 import { ViewStudentDialog } from '@/components/Students/ViewStudentDialog';
+import { AddStudentDialog } from '@/components/Students/AddStudentDialog';
 import { Student } from '@/types/student';
 import { usePaymentReminders } from '@/hooks/usePaymentReminders';
 
@@ -16,7 +17,9 @@ export const StudentsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [editStudentOpen, setEditStudentOpen] = useState(false);
   const [viewStudentOpen, setViewStudentOpen] = useState(false);
+  const [addStudentOpen, setAddStudentOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [deletedStudent, setDeletedStudent] = useState<Student | null>(null);
   const [students, setStudents] = useState<Student[]>([
     { 
       id: 1, 
@@ -72,10 +75,16 @@ export const StudentsPage: React.FC = () => {
   );
 
   const handleAddStudent = () => {
-    toast({
-      title: "Novo Aluno",
-      description: "Formulário de cadastro será aberto...",
-    });
+    setAddStudentOpen(true);
+  };
+
+  const handleSaveNewStudent = (studentData: Omit<Student, 'id'>) => {
+    const newId = Math.max(...students.map(s => s.id), 0) + 1;
+    const newStudent: Student = {
+      ...studentData,
+      id: newId,
+    };
+    setStudents(prev => [...prev, newStudent]);
   };
 
   const handleViewStudent = (student: Student) => {
@@ -95,12 +104,44 @@ export const StudentsPage: React.FC = () => {
   };
 
   const handleDeleteStudent = (studentId: number) => {
-    setStudents(prev => prev.filter(student => student.id !== studentId));
-    toast({
-      title: "Aluno Excluído",
-      description: `Aluno removido com sucesso`,
-      variant: "destructive",
-    });
+    const studentToDelete = students.find(student => student.id === studentId);
+    if (studentToDelete) {
+      setDeletedStudent(studentToDelete);
+      setStudents(prev => prev.filter(student => student.id !== studentId));
+      
+      toast({
+        title: "Aluno Excluído",
+        description: `${studentToDelete.name} foi removido com sucesso`,
+        variant: "destructive",
+        action: (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleUndoDelete}
+            className="bg-white text-black border-gray-300 hover:bg-gray-100"
+          >
+            Desfazer
+          </Button>
+        ),
+      });
+
+      // Limpar o aluno deletado após 10 segundos se não for desfeito
+      setTimeout(() => {
+        setDeletedStudent(null);
+      }, 10000);
+    }
+  };
+
+  const handleUndoDelete = () => {
+    if (deletedStudent) {
+      setStudents(prev => [...prev, deletedStudent].sort((a, b) => a.id - b.id));
+      setDeletedStudent(null);
+      
+      toast({
+        title: "Exclusão Desfeita",
+        description: `${deletedStudent.name} foi restaurado com sucesso`,
+      });
+    }
   };
 
   return (
@@ -172,6 +213,12 @@ export const StudentsPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <AddStudentDialog
+        open={addStudentOpen}
+        onOpenChange={setAddStudentOpen}
+        onSave={handleSaveNewStudent}
+      />
 
       <EditStudentDialog
         open={editStudentOpen}
