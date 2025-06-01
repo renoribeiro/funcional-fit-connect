@@ -23,7 +23,7 @@ interface StudentForm {
   phone: string;
   plan: string;
   status: string;
-  paymentMethod: 'Site' | 'Direto' | 'App';
+  paymentMethod: 'Site' | 'Direto' | 'App' | 'PIX' | 'Cartão';
   dueDate?: string;
 }
 
@@ -114,6 +114,7 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
                 <SelectItem value="Básico">Básico</SelectItem>
                 <SelectItem value="Intermediário">Intermediário</SelectItem>
                 <SelectItem value="Premium">Premium</SelectItem>
+                <SelectItem value="VIP">VIP</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -132,7 +133,7 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="paymentMethod">Forma de Pagamento</Label>
-            <Select value={watchedPaymentMethod} onValueChange={(value) => setValue('paymentMethod', value as 'Site' | 'Direto' | 'App')}>
+            <Select value={watchedPaymentMethod} onValueChange={(value: 'Site' | 'Direto' | 'App' | 'PIX' | 'Cartão') => setValue('paymentMethod', value)}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione a forma de pagamento" />
               </SelectTrigger>
@@ -140,6 +141,8 @@ export const EditStudentDialog: React.FC<EditStudentDialogProps> = ({
                 <SelectItem value="Site">Site</SelectItem>
                 <SelectItem value="Direto">Direto</SelectItem>
                 <SelectItem value="App">App</SelectItem>
+                <SelectItem value="PIX">PIX</SelectItem>
+                <SelectItem value="Cartão">Cartão</SelectItem>
               </SelectContent>
             </Select>
           </div>
