@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Settings, Users, Key, Shield, Database, Mail, MessageSquare } from 'lucide-react';
+import { Settings, Users, Key, Shield, Database, Mail, MessageSquare, MapPin, GraduationCap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ManageUsersDialog } from '@/components/Settings/ManageUsersDialog';
+import { ManageInstructorsDialog } from '@/components/Settings/ManageInstructorsDialog';
+import { ManageLocationsDialog } from '@/components/Settings/ManageLocationsDialog';
 import { WhatsAppConfigDialog } from '@/components/Settings/WhatsAppConfigDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export const SettingsPage: React.FC = () => {
   const { toast } = useToast();
   const [manageUsersOpen, setManageUsersOpen] = useState(false);
+  const [manageInstructorsOpen, setManageInstructorsOpen] = useState(false);
+  const [manageLocationsOpen, setManageLocationsOpen] = useState(false);
   const [whatsAppConfigOpen, setWhatsAppConfigOpen] = useState(false);
 
   const handleBackupData = () => {
@@ -41,8 +45,10 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="users">Usuários</TabsTrigger>
+          <TabsTrigger value="instructors">Instrutores</TabsTrigger>
+          <TabsTrigger value="locations">Locais</TabsTrigger>
           <TabsTrigger value="permissions">Permissões</TabsTrigger>
           <TabsTrigger value="system">Sistema</TabsTrigger>
           <TabsTrigger value="integrations">Integrações</TabsTrigger>
@@ -80,6 +86,87 @@ export const SettingsPage: React.FC = () => {
               <Button onClick={() => setManageUsersOpen(true)} className="w-full md:w-auto">
                 <Users className="h-4 w-4 mr-2" />
                 Gerenciar Usuários
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="instructors" className="space-y-6">
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-card-foreground">
+                <GraduationCap className="h-5 w-5 text-blue-600" />
+                Gerenciamento de Instrutores
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Gerencie instrutores e professores do sistema
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <h4 className="font-medium text-blue-600">Total de Instrutores</h4>
+                  <p className="text-2xl font-bold text-blue-600">3</p>
+                  <p className="text-sm text-muted-foreground">Usuários com função Professor</p>
+                </div>
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <h4 className="font-medium text-green-600">Instrutores Ativos</h4>
+                  <p className="text-2xl font-bold text-green-600">2</p>
+                  <p className="text-sm text-muted-foreground">67% de atividade</p>
+                </div>
+                <div className="p-4 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                  <h4 className="font-medium text-purple-600">Especialidades</h4>
+                  <p className="text-2xl font-bold text-purple-600">6</p>
+                  <p className="text-sm text-muted-foreground">Áreas de atuação</p>
+                </div>
+              </div>
+              <Button onClick={() => setManageInstructorsOpen(true)} className="w-full md:w-auto">
+                <GraduationCap className="h-4 w-4 mr-2" />
+                Gerenciar Instrutores
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="locations" className="space-y-6">
+          <Card className="bg-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-card-foreground">
+                <MapPin className="h-5 w-5 text-orange-600" />
+                Locais de Treinamento
+              </CardTitle>
+              <CardDescription className="text-muted-foreground">
+                Configure e gerencie os locais onde as aulas são realizadas
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                  <h4 className="font-medium text-orange-600">Total de Locais</h4>
+                  <p className="text-2xl font-bold text-orange-600">2</p>
+                  <p className="text-sm text-muted-foreground">Locais cadastrados</p>
+                </div>
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
+                  <h4 className="font-medium text-green-600">Locais Ativos</h4>
+                  <p className="text-2xl font-bold text-green-600">2</p>
+                  <p className="text-sm text-muted-foreground">100% operacionais</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="p-3 border border-border rounded-lg bg-card">
+                  <h4 className="font-medium text-card-foreground">Academia Central</h4>
+                  <p className="text-sm text-muted-foreground">Rua das Flores, 123 - Centro, São Paulo</p>
+                  <p className="text-xs text-muted-foreground">Seg-Sex: 06:00-22:00</p>
+                </div>
+                <div className="p-3 border border-border rounded-lg bg-card">
+                  <h4 className="font-medium text-card-foreground">Filial Zona Norte</h4>
+                  <p className="text-sm text-muted-foreground">Av. Paulista, 456 - Bela Vista, São Paulo</p>
+                  <p className="text-xs text-muted-foreground">Seg-Sex: 05:30-23:00</p>
+                </div>
+              </div>
+              <Button onClick={() => setManageLocationsOpen(true)} className="w-full md:w-auto">
+                <MapPin className="h-4 w-4 mr-2" />
+                Gerenciar Locais
               </Button>
             </CardContent>
           </Card>
@@ -221,6 +308,16 @@ export const SettingsPage: React.FC = () => {
       <ManageUsersDialog
         open={manageUsersOpen}
         onOpenChange={setManageUsersOpen}
+      />
+
+      <ManageInstructorsDialog
+        open={manageInstructorsOpen}
+        onOpenChange={setManageInstructorsOpen}
+      />
+
+      <ManageLocationsDialog
+        open={manageLocationsOpen}
+        onOpenChange={setManageLocationsOpen}
       />
 
       <WhatsAppConfigDialog
