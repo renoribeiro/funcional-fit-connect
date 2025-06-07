@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { Calendar, Plus, Clock, Users, MapPin, Settings } from 'lucide-react';
+import { Calendar, Plus, Clock, Users, MapPin, Settings, UserCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { EditClassDialog } from '@/components/Calendar/EditClassDialog';
 import { CalendarView } from '@/components/Calendar/CalendarView';
+import { AttendanceDialog } from '@/components/Calendar/AttendanceDialog';
+import { Student } from '@/types/student';
 
 interface Class {
   id: number;
@@ -23,7 +25,9 @@ export const CalendarPage: React.FC = () => {
   const { toast } = useToast();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
+  const [attendanceClass, setAttendanceClass] = useState<Class | null>(null);
   
   // Estado das aulas com datas diferentes
   const [classes, setClasses] = useState<Class[]>([
@@ -119,6 +123,64 @@ export const CalendarPage: React.FC = () => {
     },
   ]);
 
+  // Lista de alunos ativos (em um app real, viria de uma API)
+  const [students] = useState<Student[]>([
+    { 
+      id: 1, 
+      name: 'Maria Santos', 
+      email: 'maria@email.com', 
+      phone: '(11) 99999-1111',
+      plan: 'Premium', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-22',
+      paymentMethod: 'Site',
+      dueDate: '2024-02-15'
+    },
+    { 
+      id: 2, 
+      name: 'João Silva', 
+      email: 'joao@email.com', 
+      phone: '(11) 99999-2222',
+      plan: 'Básico', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-21',
+      paymentMethod: 'App'
+    },
+    { 
+      id: 3, 
+      name: 'Ana Costa', 
+      email: 'ana@email.com', 
+      phone: '(11) 99999-3333',
+      plan: 'Premium', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-20',
+      paymentMethod: 'Direto',
+      dueDate: '2024-02-10'
+    },
+    { 
+      id: 4, 
+      name: 'Carlos Oliveira', 
+      email: 'carlos@email.com', 
+      phone: '(11) 99999-4444',
+      plan: 'Intermediário', 
+      status: 'Ativo', 
+      lastWorkout: '2024-01-19',
+      paymentMethod: 'Site',
+      dueDate: '2024-02-20'
+    },
+    { 
+      id: 5, 
+      name: 'Pedro Santos', 
+      email: 'pedro@email.com', 
+      phone: '(11) 99999-5555',
+      plan: 'Básico', 
+      status: 'Pendente', 
+      lastWorkout: '2024-01-15',
+      paymentMethod: 'Direto',
+      dueDate: '2024-02-05'
+    },
+  ]);
+
   // Filtrar aulas do dia selecionado
   const todaysClasses = selectedDate ? classes.filter(
     cls => cls.date.toDateString() === selectedDate.toDateString()
@@ -185,6 +247,11 @@ export const CalendarPage: React.FC = () => {
     });
   };
 
+  const handleAttendance = (classData: Class) => {
+    setAttendanceClass(classData);
+    setAttendanceDialogOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -247,7 +314,7 @@ export const CalendarPage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 pt-4">
+                  <div className="flex flex-wrap gap-2 pt-4">
                     <Button 
                       variant="outline" 
                       size="sm" 
@@ -255,6 +322,15 @@ export const CalendarPage: React.FC = () => {
                       className="flex-1"
                     >
                       Editar
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => handleAttendance(class_)}
+                      className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200"
+                    >
+                      <UserCheck className="h-4 w-4 mr-1" />
+                      Frequência
                     </Button>
                     <Button 
                       variant="outline" 
@@ -332,6 +408,13 @@ export const CalendarPage: React.FC = () => {
         onOpenChange={setEditDialogOpen}
         classData={editingClass}
         onSave={handleSaveClass}
+      />
+
+      <AttendanceDialog
+        open={attendanceDialogOpen}
+        onOpenChange={setAttendanceDialogOpen}
+        classData={attendanceClass}
+        students={students}
       />
     </div>
   );
