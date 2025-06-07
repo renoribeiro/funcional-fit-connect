@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
-import { CreditCard, DollarSign, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { CreditCard, DollarSign, AlertCircle, CheckCircle, Clock, Sheet } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { GoogleSheetsIntegrationDialog } from '@/components/Payments/GoogleSheetsIntegrationDialog';
 
 export const PaymentsPage: React.FC = () => {
   const { toast } = useToast();
+  const [googleSheetsDialogOpen, setGoogleSheetsDialogOpen] = useState(false);
 
   const payments = [
     { id: 1, student: 'Maria Santos', amount: 150, status: 'Pago', dueDate: '2024-01-15', paidDate: '2024-01-14' },
@@ -49,9 +50,19 @@ export const PaymentsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Gerenciar Pagamentos</h1>
-        <p className="text-gray-600 mt-2">Controle de mensalidades e pagamentos dos alunos</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Gerenciar Pagamentos</h1>
+          <p className="text-gray-600 mt-2">Controle de mensalidades e pagamentos dos alunos</p>
+        </div>
+        <Button 
+          onClick={() => setGoogleSheetsDialogOpen(true)}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <Sheet className="h-4 w-4" />
+          Integrar Google Sheets
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -153,6 +164,11 @@ export const PaymentsPage: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      <GoogleSheetsIntegrationDialog
+        open={googleSheetsDialogOpen}
+        onOpenChange={setGoogleSheetsDialogOpen}
+      />
     </div>
   );
 };
