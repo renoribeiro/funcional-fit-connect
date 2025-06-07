@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -241,7 +240,7 @@ export const AttendanceDialog: React.FC<AttendanceDialogProps> = ({
                         htmlFor={`student-${record.studentId}`}
                         className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                       >
-                        {record.present ? 'Presente' : 'Ausente'}
+                        Presente
                       </label>
                     </div>
                     

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -260,7 +259,76 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </CardContent>
       </Card>
 
-      {/* Próximos 5 eventos */}
+      {/* Aulas do dia selecionado - aparecem primeiro se uma data estiver selecionada */}
+      {selectedDate && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5" />
+              Aulas de {selectedDate.toLocaleDateString('pt-BR')}
+            </CardTitle>
+            <CardDescription>
+              Aulas agendadas para o dia selecionado
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {(() => {
+              const selectedDayClasses = classes.filter(
+                cls => cls.date.toDateString() === selectedDate.toDateString()
+              );
+              
+              return selectedDayClasses.length > 0 ? (
+                <div className="space-y-3">
+                  {selectedDayClasses.map((cls) => (
+                    <div key={cls.id} className="flex items-center justify-between p-4 border rounded-lg hover:shadow-md transition-shadow">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <h4 className="font-medium">{cls.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Prof: {cls.instructor}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-4 w-4" />
+                          <span>{cls.time}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          <span>{cls.location}</span>
+                        </div>
+                        <Badge variant={cls.students >= cls.capacity ? 'destructive' : 'secondary'}>
+                          {cls.students}/{cls.capacity}
+                        </Badge>
+                        {onEditClass && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onEditClass(cls)}
+                            className="ml-2"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <CalendarDays className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-muted-foreground">Nenhuma aula agendada para este dia.</p>
+                </div>
+              );
+            })()}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Próximos 5 eventos - aparecem depois das aulas do dia */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
