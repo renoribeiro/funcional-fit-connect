@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -62,6 +63,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
     );
   };
 
+  // Função para verificar se é hoje
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
   // Função para obter aulas de uma data específica
   const getClassesForDate = (date: Date) => {
     return classes.filter(
@@ -85,17 +92,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       .slice(0, 5);
   };
 
-  // Custom day content para mostrar indicadores de aulas com hover
+  // Custom day content para mostrar indicadores de aulas com hover e marcador de hoje
   const renderDay = (day: Date) => {
     const dayClasses = getClassesForDate(day);
+    const todayFlag = isToday(day);
     
     if (dayClasses.length === 0) {
       return (
         <button
-          className="h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md relative"
+          className="relative h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md flex items-center justify-center"
           onClick={() => handleDayClick(day)}
         >
-          {day.getDate()}
+          {/* Marcador amarelo para hoje */}
+          {todayFlag && (
+            <div className="absolute inset-0 w-7 h-7 bg-yellow-400 rounded-full m-auto z-0"></div>
+          )}
+          {/* Número do dia */}
+          <span className={`relative z-10 ${todayFlag ? 'text-white font-bold' : ''}`}>{day.getDate()}</span>
         </button>
       );
     }
@@ -107,16 +120,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             className="relative h-9 w-9 p-0 font-normal hover:bg-accent hover:text-accent-foreground rounded-md flex items-center justify-center"
             onClick={() => handleDayClick(day)}
           >
-            {/* Indicador circular atrás do número */}
-            <div className="absolute inset-0 w-7 h-7 bg-primary/20 rounded-full m-auto z-0"></div>
+            {/* Marcador amarelo para hoje (prioridade alta) */}
+            {todayFlag && (
+              <div className="absolute inset-0 w-7 h-7 bg-yellow-400 rounded-full m-auto z-0"></div>
+            )}
+            {/* Indicador de aulas (apenas se não for hoje) */}
+            {!todayFlag && (
+              <div className="absolute inset-0 w-7 h-7 bg-primary/20 rounded-full m-auto z-0"></div>
+            )}
             {/* Número do dia */}
-            <span className="relative z-10">{day.getDate()}</span>
+            <span className={`relative z-10 ${todayFlag ? 'text-white font-bold' : ''}`}>{day.getDate()}</span>
           </button>
         </HoverCardTrigger>
         <HoverCardContent side="top" className="w-80">
           <div className="space-y-2">
             <h4 className="font-semibold text-sm">
               {day.getDate()} de {day.toLocaleDateString('pt-BR', { month: 'long' })}
+              {todayFlag && <span className="text-yellow-600 ml-2">(Hoje)</span>}
             </h4>
             <div className="text-xs text-muted-foreground">
               {dayClasses.length} aula{dayClasses.length > 1 ? 's' : ''} agendada{dayClasses.length > 1 ? 's' : ''}
@@ -149,7 +169,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         <CardHeader>
           <CardTitle>Calendário de Aulas</CardTitle>
           <CardDescription>
-            Passe o mouse sobre as datas com aulas para ver um resumo. Clique na data para ver detalhes completos.
+            Passe o mouse sobre as datas com aulas para ver um resumo. O dia atual aparece marcado em amarelo. Clique na data para ver detalhes completos.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -192,9 +212,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 className="rounded-md border w-full [&_.rdp-nav]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
+                  today: (date) => isToday(date),
                 }}
                 modifiersStyles={{
                   hasClasses: {
+                    fontWeight: 'bold',
+                  },
+                  today: {
                     fontWeight: 'bold',
                   },
                 }}
@@ -217,9 +241,13 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 className="rounded-md border w-full [&_.rdp-nav]:hidden"
                 modifiers={{
                   hasClasses: (date) => hasClasses(date),
+                  today: (date) => isToday(date),
                 }}
                 modifiersStyles={{
                   hasClasses: {
+                    fontWeight: 'bold',
+                  },
+                  today: {
                     fontWeight: 'bold',
                   },
                 }}

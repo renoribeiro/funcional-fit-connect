@@ -21,6 +21,15 @@ interface GoogleSheetsIntegrationDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface SheetData {
+  id: number;
+  student: string;
+  amount: number;
+  status: string;
+  dueDate: string;
+  email: string;
+}
+
 export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDialogProps> = ({
   open,
   onOpenChange,
@@ -30,13 +39,54 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
   const [isConnected, setIsConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [lastSync, setLastSync] = useState<string | null>(null);
+  const [sheetData, setSheetData] = useState<SheetData[]>([]);
 
-  // Dados simulados da planilha
-  const sheetData = [
-    { id: 1, student: 'Maria Santos', amount: 150, status: 'Pago', dueDate: '2024-01-15', email: 'maria@email.com' },
-    { id: 2, student: 'João Silva', amount: 120, status: 'Pendente', dueDate: '2024-01-20', email: 'joao@email.com' },
-    { id: 3, student: 'Ana Costa', amount: 180, status: 'Atrasado', dueDate: '2024-01-10', email: 'ana@email.com' },
-  ];
+  const parseGoogleSheetsCsv = async (url: string): Promise<SheetData[]> => {
+    try {
+      // Converter URL normal do Google Sheets para CSV
+      const csvUrl = url.replace('/edit#gid=', '/export?format=csv&gid=')
+                       .replace('/edit?usp=sharing', '/export?format=csv')
+                       .replace('/edit', '/export?format=csv');
+      
+      console.log('Tentando acessar URL CSV:', csvUrl);
+      
+      const response = await fetch(csvUrl);
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+      
+      const csvText = await response.text();
+      console.log('Dados CSV recebidos:', csvText.substring(0, 200) + '...');
+      
+      const lines = csvText.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+      
+      console.log('Headers encontrados:', headers);
+      
+      const data: SheetData[] = [];
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''));
+        
+        if (values.length >= 5) {
+          data.push({
+            id: i,
+            student: values[0] || 'Nome não informado',
+            email: values[1] || 'email@exemplo.com',
+            amount: parseFloat(values[2]) || 0,
+            status: values[3] || 'Pendente',
+            dueDate: values[4] || new Date().toLocaleDateString('pt-BR')
+          });
+        }
+      }
+      
+      console.log('Dados processados:', data);
+      return data;
+    } catch (error) {
+      console.error('Erro ao processar planilha:', error);
+      throw error;
+    }
+  };
 
   const handleConnect = async () => {
     if (!sheetUrl) {
@@ -50,36 +100,63 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
 
     setIsLoading(true);
     
-    // Simular conexão
-    setTimeout(() => {
+    try {
+      console.log('Iniciando conexão com a planilha...');
+      const data = await parseGoogleSheetsCsv(sheetUrl);
+      
+      setSheetData(data);
       setIsConnected(true);
       setLastSync(new Date().toLocaleString('pt-BR'));
-      setIsLoading(false);
+      
       toast({
         title: "Integração Conectada",
-        description: "A planilha foi conectada com sucesso!",
+        description: `Planilha conectada com sucesso! ${data.length} registros importados.`,
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Erro na conexão:', error);
+      toast({
+        title: "Erro na Conexão",
+        description: "Não foi possível conectar à planilha. Verifique se a URL está correta e a planilha está pública.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSync = async () => {
+    if (!sheetUrl) return;
+    
     setIsLoading(true);
     
-    // Simular sincronização
-    setTimeout(() => {
+    try {
+      console.log('Sincronizando dados da planilha...');
+      const data = await parseGoogleSheetsCsv(sheetUrl);
+      
+      setSheetData(data);
       setLastSync(new Date().toLocaleString('pt-BR'));
-      setIsLoading(false);
+      
       toast({
         title: "Sincronização Concluída",
-        description: "Os dados foram atualizados com sucesso!",
+        description: `${data.length} registros atualizados com sucesso!`,
       });
-    }, 1500);
+    } catch (error) {
+      console.error('Erro na sincronização:', error);
+      toast({
+        title: "Erro na Sincronização",
+        description: "Não foi possível sincronizar os dados da planilha.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDisconnect = () => {
     setIsConnected(false);
     setSheetUrl('');
     setLastSync(null);
+    setSheetData([]);
     toast({
       title: "Integração Desconectada",
       description: "A planilha foi desconectada com sucesso.",
@@ -131,7 +208,7 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                 </CardTitle>
                 <CardDescription>
                   {isConnected 
-                    ? "Sua planilha está conectada e sincronizada"
+                    ? `Sua planilha está conectada e sincronizada - ${sheetData.length} registros`
                     : "Configure a URL da planilha para começar"
                   }
                 </CardDescription>
@@ -199,7 +276,7 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                {isConnected ? (
+                {isConnected && sheetData.length > 0 ? (
                   <div className="space-y-3">
                     {sheetData.map((payment) => (
                       <div key={payment.id} className="flex items-center justify-between p-3 border rounded-lg">
@@ -223,7 +300,7 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                 ) : (
                   <div className="text-center py-8 text-gray-500">
                     <Sheet className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Conecte uma planilha para visualizar os dados</p>
+                    <p>{isConnected ? 'Nenhum dado encontrado na planilha' : 'Conecte uma planilha para visualizar os dados'}</p>
                   </div>
                 )}
               </CardContent>
@@ -247,7 +324,7 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                     <div>
                       <h4 className="font-medium">Prepare sua planilha</h4>
                       <p className="text-sm text-gray-600">
-                        Certifique-se de que sua planilha tenha as colunas: Nome, Email, Valor, Status, Data de Vencimento
+                        Certifique-se de que sua planilha tenha as colunas: Nome, Email, Valor, Status, Data de Vencimento (nesta ordem)
                       </p>
                     </div>
                   </div>
@@ -257,9 +334,9 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                       2
                     </div>
                     <div>
-                      <h4 className="font-medium">Compartilhe a planilha</h4>
+                      <h4 className="font-medium">Torne a planilha pública</h4>
                       <p className="text-sm text-gray-600">
-                        Torne a planilha "Visível para qualquer pessoa com o link" nas configurações de compartilhamento
+                        No Google Sheets, clique em "Compartilhar" → "Alterar para qualquer pessoa com o link" → "Visualizador"
                       </p>
                     </div>
                   </div>
@@ -294,10 +371,17 @@ export const GoogleSheetsIntegrationDialog: React.FC<GoogleSheetsIntegrationDial
                   <div className="text-sm text-blue-700 space-y-1">
                     <p><strong>Coluna A:</strong> Nome do Aluno</p>
                     <p><strong>Coluna B:</strong> Email</p>
-                    <p><strong>Coluna C:</strong> Valor (R$)</p>
+                    <p><strong>Coluna C:</strong> Valor (apenas números, ex: 150)</p>
                     <p><strong>Coluna D:</strong> Status (Pago/Pendente/Atrasado)</p>
                     <p><strong>Coluna E:</strong> Data de Vencimento (DD/MM/AAAA)</p>
                   </div>
+                </div>
+
+                <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <h4 className="font-medium text-yellow-800 mb-2">⚠️ Importante:</h4>
+                  <p className="text-sm text-yellow-700">
+                    A planilha deve estar configurada como "Qualquer pessoa com o link pode visualizar" para que a integração funcione corretamente.
+                  </p>
                 </div>
               </CardContent>
             </Card>
