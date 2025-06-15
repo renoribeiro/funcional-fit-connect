@@ -8,6 +8,8 @@ import { EditClassDialog } from '@/components/Calendar/EditClassDialog';
 import { CalendarView } from '@/components/Calendar/CalendarView';
 import { AttendanceDialog } from '@/components/Calendar/AttendanceDialog';
 import { Student } from '@/types/student';
+import { NotificationTimingDialog } from '@/components/Settings/NotificationTimingDialog';
+import { NotificationChannelsDialog } from '@/components/Settings/NotificationChannelsDialog';
 
 interface Class {
   id: number;
@@ -26,6 +28,8 @@ export const CalendarPage: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [attendanceDialogOpen, setAttendanceDialogOpen] = useState(false);
+  const [notificationTimingOpen, setNotificationTimingOpen] = useState(false);
+  const [notificationChannelsOpen, setNotificationChannelsOpen] = useState(false);
   const [editingClass, setEditingClass] = useState<Class | null>(null);
   const [attendanceClass, setAttendanceClass] = useState<Class | null>(null);
   
@@ -385,7 +389,11 @@ export const CalendarPage: React.FC = () => {
             <div className="p-4 border rounded-lg">
               <h4 className="font-medium mb-2">Antecedência de Notificação</h4>
               <p className="text-sm text-gray-600 mb-3">Enviar lembretes 2 horas antes da aula</p>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setNotificationTimingOpen(true)}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Configurar
               </Button>
@@ -393,7 +401,11 @@ export const CalendarPage: React.FC = () => {
             <div className="p-4 border rounded-lg">
               <h4 className="font-medium mb-2">Canais de Envio</h4>
               <p className="text-sm text-gray-600 mb-3">Push notification + WhatsApp</p>
-              <Button variant="outline" size="sm">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setNotificationChannelsOpen(true)}
+              >
                 <Settings className="h-4 w-4 mr-2" />
                 Configurar
               </Button>
@@ -415,6 +427,17 @@ export const CalendarPage: React.FC = () => {
         onOpenChange={setAttendanceDialogOpen}
         classData={attendanceClass}
         students={students}
+      />
+
+      {/* Novos diálogos de configuração */}
+      <NotificationTimingDialog
+        open={notificationTimingOpen}
+        onOpenChange={setNotificationTimingOpen}
+      />
+
+      <NotificationChannelsDialog
+        open={notificationChannelsOpen}
+        onOpenChange={setNotificationChannelsOpen}
       />
     </div>
   );
