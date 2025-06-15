@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Settings, Users, Key, Shield, Database, Mail, MessageSquare, MapPin, GraduationCap } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,6 +8,8 @@ import { ManageUsersDialog } from '@/components/Settings/ManageUsersDialog';
 import { ManageInstructorsDialog } from '@/components/Settings/ManageInstructorsDialog';
 import { ManageLocationsDialog } from '@/components/Settings/ManageLocationsDialog';
 import { WhatsAppConfigDialog } from '@/components/Settings/WhatsAppConfigDialog';
+import { SMTPConfigDialog } from '@/components/Settings/SMTPConfigDialog';
+import { PaymentConfigDialog } from '@/components/Settings/PaymentConfigDialog';
 import { useToast } from '@/hooks/use-toast';
 
 export const SettingsPage: React.FC = () => {
@@ -15,18 +18,13 @@ export const SettingsPage: React.FC = () => {
   const [manageInstructorsOpen, setManageInstructorsOpen] = useState(false);
   const [manageLocationsOpen, setManageLocationsOpen] = useState(false);
   const [whatsAppConfigOpen, setWhatsAppConfigOpen] = useState(false);
+  const [smtpConfigOpen, setSmtpConfigOpen] = useState(false);
+  const [paymentConfigOpen, setPaymentConfigOpen] = useState(false);
 
   const handleBackupData = () => {
     toast({
       title: "Backup Iniciado",
       description: "O backup dos dados foi iniciado com sucesso.",
-    });
-  };
-
-  const handleTestEmail = () => {
-    toast({
-      title: "Teste de Email",
-      description: "Email de teste enviado para verificar configurações.",
     });
   };
 
@@ -280,10 +278,7 @@ export const SettingsPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">Configurações de envio de email</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={handleTestEmail} className="border-border hover:bg-accent">
-                      Testar
-                    </Button>
-                    <Button variant="outline" size="sm" className="border-border hover:bg-accent">
+                    <Button variant="outline" size="sm" onClick={() => setSmtpConfigOpen(true)} className="border-border hover:bg-accent">
                       Configurar
                     </Button>
                   </div>
@@ -294,7 +289,7 @@ export const SettingsPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground">Gateway de pagamento</p>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="border-border hover:bg-accent">
+                    <Button variant="outline" size="sm" onClick={() => setPaymentConfigOpen(true)} className="border-border hover:bg-accent">
                       Configurar
                     </Button>
                   </div>
@@ -323,6 +318,16 @@ export const SettingsPage: React.FC = () => {
       <WhatsAppConfigDialog
         open={whatsAppConfigOpen}
         onOpenChange={setWhatsAppConfigOpen}
+      />
+
+      <SMTPConfigDialog
+        open={smtpConfigOpen}
+        onOpenChange={setSmtpConfigOpen}
+      />
+
+      <PaymentConfigDialog
+        open={paymentConfigOpen}
+        onOpenChange={setPaymentConfigOpen}
       />
     </div>
   );
