@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
@@ -8,23 +7,7 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Calendar, Mail, Phone, User, Activity, Target, TrendingUp, Settings } from 'lucide-react';
 import { BiometryConfigDialog } from './BiometryConfigDialog';
-
-interface Student {
-  id: number;
-  name: string;
-  email: string;
-  plan: string;
-  status: string;
-  lastWorkout: string;
-  biometry?: {
-    enabled: boolean;
-    frequency: 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
-    lastUpdate?: string;
-    weight?: number;
-    bodyFat?: number;
-    muscleMass?: number;
-  };
-}
+import { Student } from '@/types/student';
 
 interface ViewStudentDialogProps {
   open: boolean;
@@ -45,7 +28,7 @@ export const ViewStudentDialog: React.FC<ViewStudentDialogProps> = ({
 
   // Mock data for demonstration
   const studentDetails = {
-    phone: '+55 11 99999-9999',
+    phone: student.phone || '+55 11 99999-9999',
     joinDate: '2024-01-15',
     trainer: 'Carlos Silva',
     workoutsCompleted: 32,
@@ -123,6 +106,16 @@ export const ViewStudentDialog: React.FC<ViewStudentDialogProps> = ({
                   <span className="text-sm font-medium">Plano:</span>
                   <Badge variant="outline">{student.plan}</Badge>
                 </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-medium">Pagamento:</span>
+                  <Badge variant="outline">{student.paymentMethod}</Badge>
+                </div>
+                {student.dueDate && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">Vencimento:</span>
+                    <span className="text-sm">{student.dueDate}</span>
+                  </div>
+                )}
               </CardContent>
             </Card>
 
