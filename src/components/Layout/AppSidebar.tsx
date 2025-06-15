@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -40,6 +39,7 @@ export const AppSidebar: React.FC = () => {
   const studentMenuItems = [
     { title: 'Dashboard', url: '/dashboard', icon: Home },
     { title: 'Ficha de Treino', url: '/workout-plan', icon: Dumbbell },
+    { title: 'Calendário', url: '/calendar', icon: Calendar },
     { title: 'Frequência', url: '/attendance', icon: Clock },
     { title: 'Vídeos', url: '/videos', icon: Video },
     { title: 'Chat Alunos', url: '/chat', icon: MessageCircle },

@@ -25,6 +25,9 @@ import { ChatPage } from '@/pages/student/ChatPage';
 import { MessagesPage } from '@/pages/student/MessagesPage';
 import { ProfilePage as StudentProfilePage } from '@/pages/student/ProfilePage';
 import { SubscriptionPage } from '@/pages/student/SubscriptionPage';
+import { CalendarPage as StudentCalendarPage } from '@/pages/student/CalendarPage';
+import { GoalsPage as StudentGoalsPage } from '@/pages/student/GoalsPage';
+
 
 // Página de Perfil Comum
 import { ProfilePage } from '@/pages/ProfilePage';
@@ -67,6 +70,8 @@ export const MainLayout: React.FC = () => {
         <Route path="/chat" element={<ChatPage />} />
         <Route path="/messages" element={<MessagesPage />} />
         <Route path="/subscription" element={<SubscriptionPage />} />
+        <Route path="/calendar" element={<StudentCalendarPage />} />
+        <Route path="/goals" element={<StudentGoalsPage />} />
       </>
     );
 
