@@ -17,8 +17,16 @@ console.log('App.tsx: QueryClient criado:', queryClient);
 
 const AppContent = () => {
   console.log('AppContent: Renderizando...');
-  const { isAuthenticated } = useAuth();
-  console.log('AppContent: isAuthenticated =', isAuthenticated);
+  const { isAuthenticated, isLoading } = useAuth();
+  console.log('AppContent: isAuthenticated =', isAuthenticated, 'isLoading =', isLoading);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">
+        Carregando...
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     console.log('AppContent: Usuário não autenticado, mostrando LoginForm');

@@ -1,38 +1,39 @@
 
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/Layout/AppSidebar';
 import { Header } from '@/components/Layout/Header';
-import { AdminDashboard } from '@/components/Dashboard/AdminDashboard';
-import { StudentDashboard } from '@/components/Dashboard/StudentDashboard';
 import { useAuth } from '@/contexts/AuthContext';
 
+// Lazy-loaded components for better performance
+const AdminDashboard = lazy(() => import('@/components/Dashboard/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+const StudentDashboard = lazy(() => import('@/components/Dashboard/StudentDashboard').then(m => ({ default: m.StudentDashboard })));
+
 // Páginas Admin
-import { StudentsPage } from '@/pages/admin/StudentsPage';
-import { PaymentsPage } from '@/pages/admin/PaymentsPage';
-import { CalendarPage } from '@/pages/admin/CalendarPage';
-import { ActivitiesPage } from '@/pages/admin/ActivitiesPage';
-import { BiometryPage } from '@/pages/admin/BiometryPage';
-import { GoalsPage } from '@/pages/admin/GoalsPage';
-import { SettingsPage } from '@/pages/admin/SettingsPage';
+const StudentsPage = lazy(() => import('@/pages/admin/StudentsPage').then(m => ({ default: m.StudentsPage })));
+const PaymentsPage = lazy(() => import('@/pages/admin/PaymentsPage').then(m => ({ default: m.PaymentsPage })));
+const CalendarPage = lazy(() => import('@/pages/admin/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const ActivitiesPage = lazy(() => import('@/pages/admin/ActivitiesPage').then(m => ({ default: m.ActivitiesPage })));
+const BiometryPage = lazy(() => import('@/pages/admin/BiometryPage').then(m => ({ default: m.BiometryPage })));
+const GoalsPage = lazy(() => import('@/pages/admin/GoalsPage').then(m => ({ default: m.GoalsPage })));
+const SettingsPage = lazy(() => import('@/pages/admin/SettingsPage').then(m => ({ default: m.SettingsPage })));
 
 // Páginas Aluno
-import { WorkoutPlanPage } from '@/pages/student/WorkoutPlanPage';
-import { AttendancePage } from '@/pages/student/AttendancePage';
-import { VideosPage } from '@/pages/student/VideosPage';
-import { ChatPage } from '@/pages/student/ChatPage';
-import { MessagesPage } from '@/pages/student/MessagesPage';
-import { ProfilePage as StudentProfilePage } from '@/pages/student/ProfilePage';
-import { SubscriptionPage } from '@/pages/student/SubscriptionPage';
-import { CalendarPage as StudentCalendarPage } from '@/pages/student/CalendarPage';
-import { GoalsPage as StudentGoalsPage } from '@/pages/student/GoalsPage';
-
+const WorkoutPlanPage = lazy(() => import('@/pages/student/WorkoutPlanPage').then(m => ({ default: m.WorkoutPlanPage })));
+const AttendancePage = lazy(() => import('@/pages/student/AttendancePage').then(m => ({ default: m.AttendancePage })));
+const VideosPage = lazy(() => import('@/pages/student/VideosPage').then(m => ({ default: m.VideosPage })));
+const ChatPage = lazy(() => import('@/pages/student/ChatPage').then(m => ({ default: m.ChatPage })));
+const MessagesPage = lazy(() => import('@/pages/student/MessagesPage').then(m => ({ default: m.MessagesPage })));
+const SubscriptionPage = lazy(() => import('@/pages/student/SubscriptionPage').then(m => ({ default: m.SubscriptionPage })));
+const StudentCalendarPage = lazy(() => import('@/pages/student/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const StudentGoalsPage = lazy(() => import('@/pages/student/GoalsPage').then(m => ({ default: m.GoalsPage })));
 
 // Página de Perfil Comum
-import { ProfilePage } from '@/pages/ProfilePage';
+const ProfilePage = lazy(() => import('@/pages/ProfilePage').then(m => ({ default: m.ProfilePage })));
 
-import NotFound from '@/pages/NotFound';
+const NotFound = lazy(() => import('@/pages/NotFound'));
+
 
 export const MainLayout: React.FC = () => {
   const { user } = useAuth();
@@ -94,7 +95,9 @@ export const MainLayout: React.FC = () => {
             <Header />
             <main className="flex-1 p-6 bg-background">
               <div className="max-w-7xl mx-auto">
-                {renderRoutes()}
+                <Suspense fallback={<div className="py-10 text-center text-muted-foreground">Carregando...</div>}>
+                  {renderRoutes()}
+                </Suspense>
               </div>
             </main>
           </div>
